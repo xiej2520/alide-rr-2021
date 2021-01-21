@@ -25,16 +25,31 @@ import java.util.List;
  *    \--------------/
  *
  */
+/*
+94.625 in actual
+x: 94.6184, 94.5100, 94.4114, 94.6638, 94.6540
+Avg: 94.57152
+Ratio: 1.0005655
+y--rubber-band: 94.1356, 94.3179, 94.1230, 94.0193, 94.1140
+Avg: 94.14196
+Ratio: 1.005131
+
+
+Effective LATERAL_DISTANCE: 15.9161, 15.9277, 15.9260, 15.8959, 15.9116 Avg: 15.91546
+ */
 @Config
 public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 8192;
     public static double WHEEL_RADIUS = 0.748; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 16; // in; distance between the left and right wheels
+    public static double LATERAL_DISTANCE = 15.91546; // in; distance between the left and right wheels
     public static double FORWARD_OFFSET = 1.5; // in; offset of the lateral wheel
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;
+
+    public static double X_MULTIPLIER = 1.0005655; // Multiplier in the X direction
+    public static double Y_MULTIPLIER = 1.005131; // Multiplier in the Y direction
 
     public StandardTrackingWheelLocalizer(HardwareMap hardwareMap) {
         super(Arrays.asList(
@@ -59,9 +74,9 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     @Override
     public List<Double> getWheelPositions() {
         return Arrays.asList(
-                encoderTicksToInches(leftEncoder.getCurrentPosition()),
-                encoderTicksToInches(rightEncoder.getCurrentPosition()),
-                encoderTicksToInches(frontEncoder.getCurrentPosition())
+                encoderTicksToInches(leftEncoder.getCurrentPosition()) * X_MULTIPLIER,
+                encoderTicksToInches(rightEncoder.getCurrentPosition()) * X_MULTIPLIER,
+                encoderTicksToInches(frontEncoder.getCurrentPosition()) * Y_MULTIPLIER
         );
     }
 
@@ -73,9 +88,9 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
         //  compensation method
 
         return Arrays.asList(
-                encoderTicksToInches(leftEncoder.getCorrectedVelocity()),
-                encoderTicksToInches(rightEncoder.getCorrectedVelocity()),
-                encoderTicksToInches(frontEncoder.getCorrectedVelocity())
+                encoderTicksToInches(leftEncoder.getCorrectedVelocity()) * X_MULTIPLIER,
+                encoderTicksToInches(rightEncoder.getCorrectedVelocity()) * X_MULTIPLIER,
+                encoderTicksToInches(frontEncoder.getCorrectedVelocity()) * Y_MULTIPLIER
         );
     }
 }
