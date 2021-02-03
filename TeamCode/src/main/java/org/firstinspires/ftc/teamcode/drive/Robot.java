@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive;
 
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -23,6 +24,7 @@ public class Robot {
     private boolean intakeMode;
     private boolean ringBlockerMode;
     private boolean ringPusherMode;
+    public double shooterAngleTarget;
 
 
     public Robot(HardwareMap hardwareMap) {
@@ -37,10 +39,14 @@ public class Robot {
 
 
         shooterAngle.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooterAngle.setTargetPosition(0);
         shooterAngle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        ringBlocker.setPosition(1);
+        ringPusher.setPosition(1);
+
         intakeMode = false;
-        ringBlockerMode = false;
+        ringBlockerMode = true;
         ringPusherMode = false;
     }
 
@@ -64,25 +70,25 @@ public class Robot {
     public void setRingBlockerMode(boolean mode) {
         if (mode == true) {
             ringBlockerMode = true;
-            ringBlocker.setPosition(1);
+            ringBlocker.setPosition(0.35);
         }
         else {
             ringBlockerMode = false;
-            ringBlocker.setPosition(0);
+            ringBlocker.setPosition(0.25);
         }
     }
 
     public boolean getRingPusherMode() {
-        return ringBlockerMode;
+        return ringPusherMode;
     }
     public void setRingPusherMode(boolean mode) {
         if (mode == true) {
             ringPusherMode = true;
-            ringPusher.setPosition(1);
+            ringPusher.setPosition(0);
         }
         else {
             ringPusherMode = false;
-            ringPusher.setPosition(0);
+            ringPusher.setPosition(0.3);
         }
     }
 
@@ -111,7 +117,7 @@ public class Robot {
         else {
             shooterAngle.setPower(0);
         }
-
+        shooterAngleTarget = shooterAngle.getTargetPosition();
     }
 
 }

@@ -43,8 +43,8 @@ public class ControllerState {
         dpad_right = gamepad.dpad_right;
         x = gamepad.x;
         y = gamepad.y;
-        a = gamepad.b;
-        b = gamepad.a;
+        a = gamepad.a;
+        b = gamepad.b;
         left_trigger = gamepad.left_trigger;
         right_trigger = gamepad.right_trigger;
         left_bumper = gamepad.left_bumper;
