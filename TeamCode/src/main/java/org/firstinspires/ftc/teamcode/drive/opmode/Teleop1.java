@@ -4,6 +4,9 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.drive.ButtonState;
+import org.firstinspires.ftc.teamcode.drive.EventHandler;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.drive.ControllerState;
@@ -16,11 +19,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
 
+@Config
 @TeleOp(group = "drive")
 public class Teleop1 extends LinearOpMode{
 
-    private DcMotor intakeMotor;
     private FtcDashboard dashboard;
+
+    public static double shooterVelocity = -600;
+    public static int shooterAngleDelta = 10;
 
     @Override
     public void runOpMode() {
@@ -37,6 +43,13 @@ public class Teleop1 extends LinearOpMode{
         roboto.drive.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(0)));
 
 
+
+        controller1.addEventListener("x", ButtonState.PRESSED, () -> roboto.setIntakeMode(!roboto.getIntakeMode()));
+        controller1.addEventListener("a", ButtonState.HELD, () -> roboto.setShooterVelocity(shooterVelocity));
+        controller1.addEventListener("a", ButtonState.OFF, () -> roboto.setShooterVelocity(0));
+        controller1.addEventListener("dpad_up", ButtonState.HELD, () -> roboto.changeShooterAngle(shooterAngleDelta));
+        controller1.addEventListener("dpad_down", ButtonState.HELD, () -> roboto.changeShooterAngle(-shooterAngleDelta));
+
         waitForStart();
 
         while (opModeIsActive()) {
@@ -48,10 +61,6 @@ public class Teleop1 extends LinearOpMode{
             roboto.drive.update();
 
 
-            if (controller1.x_prev == false && controller1.x == true) {
-                roboto.setIntakeMode(!roboto.getIntakeMode());
-            }
-
             if (controller1.right_trigger > 0.1) {
                 roboto.setRingPusherMode(true);
                 roboto.setRingBlockerMode(false);
@@ -61,32 +70,11 @@ public class Teleop1 extends LinearOpMode{
                 roboto.setRingBlockerMode (true);
             }
 
-            if (controller1.a == true) {
-                roboto.setShooterVelocity(300);
-            }
-            else {
-                roboto.setShooterVelocity(0);
-            }
+            controller1.handleEvents();
 
-            if (gamepad1.dpad_up == true) {
-                roboto.changeShooterAngle(10);
-            }
-            if (gamepad1.dpad_down == true) {
-                roboto.changeShooterAngle(-10);
-            }
-            telemetry.addData("shooterAngleEncoder: ", roboto.shooterAngleTarget);
-            telemetry.addData("ringBlockerMode: ", roboto.getRingBlockerMode());
-            telemetry.addData("ringPusherMode: ", roboto.getRingPusherMode());
             telemetry.update();
+
             Pose2d myPose = roboto.drive.getPoseEstimate();
-
-
-            TelemetryPacket packet = new TelemetryPacket();
-            packet.put("c1.x", controller1.x);
-            packet.put("c1.x_prev", controller1.x_prev);
-            packet.put("c1.lt", controller1.left_trigger);
-
-            dashboard.sendTelemetryPacket(packet);
         }
     }
 

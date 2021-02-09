@@ -10,10 +10,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+@Config
 public class Robot {
     public SampleMecanumDrive drive;
 
 
+    /* Motors and Servos */
     private DcMotorEx intake;
     private DcMotorEx shooterAngle;
     private DcMotorEx shooter1;
@@ -21,10 +23,18 @@ public class Robot {
     private Servo ringBlocker;
     private Servo ringPusher;
 
+    /* Robot state variables */
     private boolean intakeMode;
     private boolean ringBlockerMode;
     private boolean ringPusherMode;
-    public double shooterAngleTarget;
+
+    /* Config variables */
+    public static double ringBlockerOffPos = 0.23;
+    public static double ringBlockerOnPos = 0.35;
+    public static double ringPusherOnPos = 0.12;
+    public static double ringPusherOffPos = 0.6;
+
+    public static int shooterAngleMaxPos = -500;
 
 
     public Robot(HardwareMap hardwareMap) {
@@ -42,12 +52,14 @@ public class Robot {
         shooterAngle.setTargetPosition(0);
         shooterAngle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        ringBlocker.setPosition(1);
-        ringPusher.setPosition(1);
 
         intakeMode = false;
         ringBlockerMode = true;
         ringPusherMode = false;
+
+        setRingBlockerMode(true);
+        setRingPusherMode(false);
+
     }
 
     public boolean getIntakeMode() {
@@ -70,11 +82,11 @@ public class Robot {
     public void setRingBlockerMode(boolean mode) {
         if (mode == true) {
             ringBlockerMode = true;
-            ringBlocker.setPosition(0.35);
+            ringBlocker.setPosition(ringBlockerOnPos);
         }
         else {
             ringBlockerMode = false;
-            ringBlocker.setPosition(0.25);
+            ringBlocker.setPosition(ringBlockerOffPos);
         }
     }
 
@@ -84,11 +96,11 @@ public class Robot {
     public void setRingPusherMode(boolean mode) {
         if (mode == true) {
             ringPusherMode = true;
-            ringPusher.setPosition(0);
+            ringPusher.setPosition(ringPusherOnPos);
         }
         else {
             ringPusherMode = false;
-            ringPusher.setPosition(0.3);
+            ringPusher.setPosition(ringPusherOffPos);
         }
     }
 
@@ -97,15 +109,15 @@ public class Robot {
         shooter2.setVelocity(v);
     }
 
-    public void changeShooterAngle(double d) {
-        if (shooterAngle.getTargetPosition() + d < 0) {
+    public void changeShooterAngle(int delta) {
+        if (shooterAngle.getTargetPosition() + delta < shooterAngleMaxPos) {
+            shooterAngle.setTargetPosition(shooterAngleMaxPos);
+        }
+        else if (shooterAngle.getTargetPosition() + delta > 0) {
             shooterAngle.setTargetPosition(0);
         }
-        else if (shooterAngle.getTargetPosition() + d > 400) {
-            shooterAngle.setTargetPosition(400);
-        }
         else {
-            shooterAngle.setTargetPosition(shooterAngle.getCurrentPosition() + (int) d);
+            shooterAngle.setTargetPosition(shooterAngle.getCurrentPosition() + delta);
         }
 
         if (shooterAngle.getCurrentPosition() < shooterAngle.getTargetPosition()) {
@@ -117,7 +129,6 @@ public class Robot {
         else {
             shooterAngle.setPower(0);
         }
-        shooterAngleTarget = shooterAngle.getTargetPosition();
     }
 
 }
