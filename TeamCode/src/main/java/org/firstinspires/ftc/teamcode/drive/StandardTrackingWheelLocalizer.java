@@ -35,7 +35,7 @@ Avg: 94.14196
 Ratio: 1.005131
 
 
-Effective LATERAL_DISTANCE: 15.9161, 15.9277, 15.9260, 15.8959, 15.9116 Avg: 15.91546
+Effective LATERAL_DISTANCE: 15.7598, 15.7865, 15.7385, 15.7563, 15.7441 use 15.75
  */
 @Config
 public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
@@ -43,7 +43,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double WHEEL_RADIUS = 0.748; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 15.91546; // in; distance between the left and right wheels
+    public static double LATERAL_DISTANCE = 15.75; // in; distance between the left and right wheels
     public static double FORWARD_OFFSET = 1.5; // in; offset of the lateral wheel
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;
