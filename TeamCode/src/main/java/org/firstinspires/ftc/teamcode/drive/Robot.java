@@ -27,6 +27,7 @@ public class Robot {
     private boolean intakeMode;
     private boolean ringBlockerMode;
     private boolean ringPusherMode;
+    private int shooterAnglePos;
 
     /* Config variables */
     public static double ringBlockerOffPos = 0.23;
@@ -34,7 +35,7 @@ public class Robot {
     public static double ringPusherOnPos = 0.12;
     public static double ringPusherOffPos = 0.6;
 
-    public static int shooterAngleMaxPos = -500;
+    public static int shooterAngleMaxPos = -320;
 
 
     public Robot(HardwareMap hardwareMap) {
@@ -129,6 +130,11 @@ public class Robot {
         else {
             shooterAngle.setPower(0);
         }
+
+        shooterAnglePos = shooterAngle.getCurrentPosition();
+    }
+    public int getShooterAngle() {
+        return shooterAnglePos;
     }
 
 }

@@ -25,8 +25,8 @@ public class Teleop1 extends LinearOpMode{
 
     private FtcDashboard dashboard;
 
-    public static double shooterVelocity = -600;
-    public static int shooterAngleDelta = 10;
+    public static double shooterVelocity = -1200;
+    public static int shooterAngleDelta = 20;
 
     @Override
     public void runOpMode() {
@@ -35,8 +35,7 @@ public class Teleop1 extends LinearOpMode{
         ControllerState controller1 = new ControllerState(gamepad1);
         ControllerState controller2 = new ControllerState(gamepad2);
 
-        dashboard = FtcDashboard.getInstance();
-        dashboard.setTelemetryTransmissionInterval(25);
+        dashboard = roboto.drive.dashboard;
 
         roboto.drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -47,8 +46,8 @@ public class Teleop1 extends LinearOpMode{
         controller1.addEventListener("x", ButtonState.PRESSED, () -> roboto.setIntakeMode(!roboto.getIntakeMode()));
         controller1.addEventListener("a", ButtonState.HELD, () -> roboto.setShooterVelocity(shooterVelocity));
         controller1.addEventListener("a", ButtonState.OFF, () -> roboto.setShooterVelocity(0));
-        controller1.addEventListener("dpad_up", ButtonState.HELD, () -> roboto.changeShooterAngle(shooterAngleDelta));
-        controller1.addEventListener("dpad_down", ButtonState.HELD, () -> roboto.changeShooterAngle(-shooterAngleDelta));
+        controller1.addEventListener("dpad_up", ButtonState.HELD, () -> roboto.changeShooterAngle(-shooterAngleDelta));
+        controller1.addEventListener("dpad_down", ButtonState.HELD, () -> roboto.changeShooterAngle(shooterAngleDelta));
 
         waitForStart();
 
@@ -75,6 +74,10 @@ public class Teleop1 extends LinearOpMode{
             telemetry.update();
 
             Pose2d myPose = roboto.drive.getPoseEstimate();
+
+            TelemetryPacket packet = new TelemetryPacket();
+            packet.put("shooterAngle", roboto.getShooterAngle());
+            dashboard.sendTelemetryPacket(packet);
         }
     }
 
