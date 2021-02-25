@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.drive.AnalogCheck;
 import org.firstinspires.ftc.teamcode.drive.ButtonState;
 import org.firstinspires.ftc.teamcode.drive.EventHandler;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -21,12 +22,12 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
 @Config
 @TeleOp(group = "drive")
-public class Teleop1 extends LinearOpMode{
+public class Teleop1Controller extends LinearOpMode{
 
     private FtcDashboard dashboard;
 
     public static double shooterVelocity = -1200;
-    public static int shooterAngleDelta = 20;
+    public static double shooterAngleDelta = 0.005;
 
     @Override
     public void runOpMode() {
@@ -48,6 +49,14 @@ public class Teleop1 extends LinearOpMode{
         controller1.addEventListener("a", ButtonState.OFF, () -> roboto.setShooterVelocity(0));
         controller1.addEventListener("dpad_up", ButtonState.HELD, () -> roboto.changeShooterAngle(-shooterAngleDelta));
         controller1.addEventListener("dpad_down", ButtonState.HELD, () -> roboto.changeShooterAngle(shooterAngleDelta));
+        controller1.addEventListener("right_trigger", AnalogCheck.GREATER_THAN, 0.1, () -> {
+            roboto.setRingPusherMode(true);
+            roboto.setRingBlockerMode(false);
+        });
+        controller1.addEventListener("right_trigger", AnalogCheck.LESS_THAN_EQUALS, 0.1, () -> {
+            roboto.setRingPusherMode(false);
+            roboto.setRingBlockerMode (true);
+        });
 
         waitForStart();
 
@@ -55,19 +64,13 @@ public class Teleop1 extends LinearOpMode{
             controller1.updateControllerState();
             controller2.updateControllerState();
 
-            Pose2d vel = new Pose2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
-            roboto.drive.setDrivePower(vel);
+            roboto.setVel(new Pose2d(
+                    -controller1.getAnalogValue("left_stick_y"),
+                    -controller1.getAnalogValue("left_stick_x"),
+                    -controller1.getAnalogValue("right_stick_x")));
+
+            roboto.drive.setDrivePower(roboto.getVel());
             roboto.drive.update();
-
-
-            if (controller1.right_trigger > 0.1) {
-                roboto.setRingPusherMode(true);
-                roboto.setRingBlockerMode(false);
-            }
-            else {
-                roboto.setRingPusherMode(false);
-                roboto.setRingBlockerMode (true);
-            }
 
             controller1.handleEvents();
 

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive;
 
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -16,10 +17,11 @@ public class Robot {
 
 
     /* Motors and Servos */
-    private DcMotorEx intake;
-    private DcMotorEx shooterAngle;
+    private DcMotorEx intake1; // top roller (big wheels)
+    private DcMotorEx intake2; // bottom roller (small wheels + ramp)
     private DcMotorEx shooter1;
     private DcMotorEx shooter2;
+    private Servo shooterAngle;
     private Servo ringBlocker;
     private Servo ringPusher;
 
@@ -27,7 +29,8 @@ public class Robot {
     private boolean intakeMode;
     private boolean ringBlockerMode;
     private boolean ringPusherMode;
-    private int shooterAnglePos;
+    private double shooterAnglePos;
+    private Pose2d vel;
 
     /* Config variables */
     public static double ringBlockerOffPos = 0.23;
@@ -35,28 +38,30 @@ public class Robot {
     public static double ringPusherOnPos = 0.12;
     public static double ringPusherOffPos = 0.6;
 
-    public static int shooterAngleMaxPos = -320;
+    public static double shooterAngleMaxPos = 0.7; // ~0 degrees, almost hits plastic
+    public static double shooterAngleMinPos = 0.07; // 90 degrees up
 
 
     public Robot(HardwareMap hardwareMap) {
         drive = new SampleMecanumDrive(hardwareMap);
 
-        intake = hardwareMap.get(DcMotorEx.class, "intake");
-        shooterAngle = hardwareMap.get(DcMotorEx.class, "shooterAngle");
+        intake1 = hardwareMap.get(DcMotorEx.class, "intake1");
+        intake2 = hardwareMap.get(DcMotorEx.class, "intake2");
         shooter1 = hardwareMap.get(DcMotorEx.class, "shooter1");
         shooter2 = hardwareMap.get(DcMotorEx.class, "shooter2");
+        shooterAngle = hardwareMap.get(Servo.class, "shooterAngle");
         ringBlocker = hardwareMap.get(Servo.class, "ringBlocker");
         ringPusher = hardwareMap.get(Servo.class, "ringPusher");
 
+        intake1.setDirection(DcMotor.Direction.REVERSE); // intake motors need to be opposite directions
 
-        shooterAngle.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shooterAngle.setTargetPosition(0);
-        shooterAngle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        shooterAngle.setPosition(0);
 
 
         intakeMode = false;
         ringBlockerMode = true;
         ringPusherMode = false;
+        vel = new Pose2d(0, 0, 0);
 
         setRingBlockerMode(true);
         setRingPusherMode(false);
@@ -69,11 +74,13 @@ public class Robot {
     public void setIntakeMode(boolean mode) {
         if (mode == true) {
             intakeMode = true;
-            intake.setPower(1);
+            intake1.setPower(1);
+            intake2.setPower(1);
         }
         else {
             intakeMode = false;
-            intake.setPower(0);
+            intake1.setPower(0);
+            intake2.setPower(0);
         }
     }
 
@@ -104,12 +111,17 @@ public class Robot {
             ringPusher.setPosition(ringPusherOffPos);
         }
     }
+    public Pose2d getVel() { return vel; }
+    public void setVel(Pose2d v) {
+        vel = v;
+    }
 
     public void setShooterVelocity(double v) {
         shooter1.setVelocity(v);
         shooter2.setVelocity(v);
     }
 
+    /*
     public void changeShooterAngle(int delta) {
         if (shooterAngle.getTargetPosition() + delta < shooterAngleMaxPos) {
             shooterAngle.setTargetPosition(shooterAngleMaxPos);
@@ -133,7 +145,21 @@ public class Robot {
 
         shooterAnglePos = shooterAngle.getCurrentPosition();
     }
-    public int getShooterAngle() {
+    */
+    public void changeShooterAngle(double delta) {
+        if (shooterAnglePos + delta > shooterAngleMaxPos) {
+            shooterAnglePos = shooterAngleMaxPos;
+        }
+        else if (shooterAnglePos + delta < shooterAngleMinPos) {
+            shooterAnglePos = shooterAngleMinPos;
+        }
+        else {
+            shooterAnglePos = shooterAnglePos + delta;
+        }
+
+        shooterAngle.setPosition(shooterAnglePos);
+    }
+    public double getShooterAngle() {
         return shooterAnglePos;
     }
 
