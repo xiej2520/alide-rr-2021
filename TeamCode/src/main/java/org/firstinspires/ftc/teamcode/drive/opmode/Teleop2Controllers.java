@@ -80,9 +80,6 @@ public class Teleop2Controllers extends LinearOpMode{
 
             Pose2d myPose = roboto.drive.getPoseEstimate();
 
-            TelemetryPacket packet = new TelemetryPacket();
-            packet.put("shooterAngle", roboto.getShooterAngle());
-            dashboard.sendTelemetryPacket(packet);
         }
     }
 

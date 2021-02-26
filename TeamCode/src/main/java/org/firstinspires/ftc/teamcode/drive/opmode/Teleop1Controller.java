@@ -28,6 +28,9 @@ public class Teleop1Controller extends LinearOpMode{
 
     public static double shooterVelocity = -1200;
     public static double shooterAngleDelta = 0.005;
+    public static double shooterAngleConfig = 0;
+
+    public static double shooterAngle = 0;
 
     @Override
     public void runOpMode() {
@@ -42,11 +45,9 @@ public class Teleop1Controller extends LinearOpMode{
 
         roboto.drive.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(0)));
 
-
-
         controller1.addEventListener("x", ButtonState.PRESSED, () -> roboto.setIntakeMode(!roboto.getIntakeMode()));
-        controller1.addEventListener("a", ButtonState.HELD, () -> roboto.setShooterVelocity(shooterVelocity));
-        controller1.addEventListener("a", ButtonState.OFF, () -> roboto.setShooterVelocity(0));
+        controller1.addEventListener("b", ButtonState.HELD, () -> roboto.setShooterVelocity(shooterVelocity));
+        controller1.addEventListener("b", ButtonState.OFF, () -> roboto.setShooterVelocity(0));
         controller1.addEventListener("dpad_up", ButtonState.HELD, () -> roboto.changeShooterAngle(-shooterAngleDelta));
         controller1.addEventListener("dpad_down", ButtonState.HELD, () -> roboto.changeShooterAngle(shooterAngleDelta));
         controller1.addEventListener("right_trigger", AnalogCheck.GREATER_THAN, 0.1, () -> {
@@ -57,12 +58,14 @@ public class Teleop1Controller extends LinearOpMode{
             roboto.setRingPusherMode(false);
             roboto.setRingBlockerMode (true);
         });
+        controller1.addEventListener("y", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+10));
+        controller1.addEventListener("a", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-10));
+        controller1.addEventListener("right_bumper", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(shooterAngleConfig));
 
         waitForStart();
 
         while (opModeIsActive()) {
             controller1.updateControllerState();
-            controller2.updateControllerState();
 
             roboto.setVel(new Pose2d(
                     -controller1.getAnalogValue("left_stick_y"),
@@ -78,9 +81,6 @@ public class Teleop1Controller extends LinearOpMode{
 
             Pose2d myPose = roboto.drive.getPoseEstimate();
 
-            TelemetryPacket packet = new TelemetryPacket();
-            packet.put("shooterAngle", roboto.getShooterAngle());
-            dashboard.sendTelemetryPacket(packet);
         }
     }
 

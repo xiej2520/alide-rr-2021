@@ -30,16 +30,19 @@ public class Robot {
     private boolean ringBlockerMode;
     private boolean ringPusherMode;
     private double shooterAnglePos;
+    private double shooterAngleDeg;
     private Pose2d vel;
 
     /* Config variables */
     public static double ringBlockerOffPos = 0.23;
     public static double ringBlockerOnPos = 0.35;
     public static double ringPusherOnPos = 0.12;
-    public static double ringPusherOffPos = 0.6;
+    public static double ringPusherOffPos = 0.31;
 
     public static double shooterAngleMaxPos = 0.7; // ~0 degrees, almost hits plastic
     public static double shooterAngleMinPos = 0.07; // 90 degrees up
+    public static double shooterAngleMinDeg = 0;
+    public static double shooterAngleMaxDeg = 90;
 
 
     public Robot(HardwareMap hardwareMap) {
@@ -55,8 +58,6 @@ public class Robot {
 
         intake1.setDirection(DcMotor.Direction.REVERSE); // intake motors need to be opposite directions
 
-        shooterAngle.setPosition(0);
-
 
         intakeMode = false;
         ringBlockerMode = true;
@@ -65,6 +66,10 @@ public class Robot {
 
         setRingBlockerMode(true);
         setRingPusherMode(false);
+
+        shooterAnglePos = shooterAngleMaxPos;
+        shooterAngleDeg = 0;
+        setShooterAngle(shooterAngleMaxPos);
 
     }
 
@@ -148,19 +153,32 @@ public class Robot {
     */
     public void changeShooterAngle(double delta) {
         if (shooterAnglePos + delta > shooterAngleMaxPos) {
-            shooterAnglePos = shooterAngleMaxPos;
+            setShooterAngle(shooterAngleMaxPos);
         }
         else if (shooterAnglePos + delta < shooterAngleMinPos) {
-            shooterAnglePos = shooterAngleMinPos;
+            setShooterAngle(shooterAngleMinPos);
         }
         else {
-            shooterAnglePos = shooterAnglePos + delta;
+            setShooterAngle(shooterAnglePos + delta);
         }
-
-        shooterAngle.setPosition(shooterAnglePos);
     }
-    public double getShooterAngle() {
+    public double getShooterAnglePos() {
         return shooterAnglePos;
+    }
+    public double getShooterAngleDeg() {
+        return shooterAngleDeg;
+    }
+    public void setShooterAngle(double pos) {
+        shooterAnglePos = pos;
+        shooterAngleDeg = linearMap(pos, shooterAngleMaxPos, shooterAngleMinPos, shooterAngleMinDeg, shooterAngleMaxDeg);
+        shooterAngle.setPosition(pos);
+    }
+    public void setShooterAngleDeg(double angle) {
+        setShooterAngle(linearMap(angle, shooterAngleMinDeg, shooterAngleMaxDeg, shooterAngleMaxPos, shooterAngleMinPos));
+    }
+
+    public double linearMap(double val, double oldMin, double oldMax, double newMin, double newMax) {
+        return newMin + (newMax-newMin) / (oldMax-oldMin) * (val - oldMin);
     }
 
 }
