@@ -37,7 +37,6 @@ public class Teleop1Controller extends LinearOpMode{
 
         Robot roboto = new Robot(hardwareMap);
         ControllerState controller1 = new ControllerState(gamepad1);
-        ControllerState controller2 = new ControllerState(gamepad2);
 
         dashboard = roboto.drive.dashboard;
 
@@ -45,22 +44,37 @@ public class Teleop1Controller extends LinearOpMode{
 
         roboto.drive.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(0)));
 
-        controller1.addEventListener("x", ButtonState.PRESSED, () -> roboto.setIntakeMode(!roboto.getIntakeMode()));
+        controller1.addEventListener("x", ButtonState.PRESSED, () -> {
+            if (roboto.getShooterAngleDeg() < 30 && roboto.getIntakeMode() == false) {
+                roboto.setIntakeMode(true);
+            }
+            else {
+                roboto.setIntakeMode(false);
+            }
+        });
+        controller1.addEventListener("dpad_right", ButtonState.PRESSED, () -> roboto.setIntakeDirection(!roboto.getIntakeDirection()));
         controller1.addEventListener("b", ButtonState.HELD, () -> roboto.setShooterVelocity(shooterVelocity));
         controller1.addEventListener("b", ButtonState.OFF, () -> roboto.setShooterVelocity(0));
         controller1.addEventListener("dpad_up", ButtonState.HELD, () -> roboto.changeShooterAngle(-shooterAngleDelta));
         controller1.addEventListener("dpad_down", ButtonState.HELD, () -> roboto.changeShooterAngle(shooterAngleDelta));
         controller1.addEventListener("right_trigger", AnalogCheck.GREATER_THAN, 0.1, () -> {
-            roboto.setRingPusherMode(true);
-            roboto.setRingBlockerMode(false);
+            if (roboto.getRingBlockerMode() == false) {
+                roboto.setRingPusherMode(true);
+            }
         });
         controller1.addEventListener("right_trigger", AnalogCheck.LESS_THAN_EQUALS, 0.1, () -> {
             roboto.setRingPusherMode(false);
-            roboto.setRingBlockerMode (true);
         });
+        controller1.addEventListener("left_trigger", AnalogCheck.GREATER_THAN, 0.1, () -> {
+            if (Math.abs(roboto.getShooterVelocity()) > 0) {
+                roboto.setRingBlockerMode(false);
+            }
+        });
+        controller1.addEventListener("left_trigger", AnalogCheck.LESS_THAN_EQUALS, 0.1, () -> roboto.setRingBlockerMode(true));
         controller1.addEventListener("y", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+10));
         controller1.addEventListener("a", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-10));
         controller1.addEventListener("right_bumper", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(shooterAngleConfig));
+        controller1.addEventListener("dpad_left", ButtonState.PRESSED, () -> roboto.setWobbleGrabberMode(!roboto.getWobbleGrabberMode()));
 
         waitForStart();
 
