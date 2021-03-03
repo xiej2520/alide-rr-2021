@@ -99,3 +99,20 @@ public class Auto1 extends LinearOpMode {
         }
     }
 }
+
+/* ADD TO ROBOT.JAVA
+
+public void autoStartShoot(double pos, double v) {
+    setShooterAngle(pos);
+    setShooterVelocity(v);
+    setRingBlockerMode(false);
+}
+
+public void autoStopShoot() {
+    setShooterAngle(0);
+    setShooterVelocity(0);
+    setRingBlockerMode(true);
+}
+
+
+ */
