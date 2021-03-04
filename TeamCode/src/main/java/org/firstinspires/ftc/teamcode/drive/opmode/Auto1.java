@@ -22,7 +22,7 @@ public class Auto1 extends LinearOpMode {
     public static Pose2d zoneA = new Pose2d(12.0, 60.0, Math.toRadians(180));
     public static Pose2d launchPos = new Pose2d(0.0, 36.0, Math.toRadians(180));
     public static Pose2d launchPos2 = new Pose2d(0.0, 36.0, Math.toRadians(0));
-    public static Pose2d rings = new Pose2d(-36, 36, Math.toRadians(180));
+    public static Pose2d rings = new Pose2d(-36, 36, Math.toRadians(0));
     public static Pose2d launchLine = new Pose2d(12, 36, Math.toRadians(0));
 
     public static Vector2d startV = new Vector2d(-60, 48);
@@ -63,7 +63,7 @@ public class Auto1 extends LinearOpMode {
                 .splineToConstantHeading(launchPosV, Math.toRadians(0))
                 .build();
 
-        Trajectory launchPosToLaunchLine = drive.trajectoryBuilder(launchPos) // move to launch line
+        Trajectory launchPosToLaunchLine = drive.trajectoryBuilder(launchPos2) // move to launch line
                 .splineToConstantHeading(launchLineV, Math.toRadians(0))
                 .build();
 
@@ -75,7 +75,7 @@ public class Auto1 extends LinearOpMode {
 
         drive.followTrajectory(zoneAToLaunchPos);
 
-        // drive.turn(Math.toRadians(180));
+        drive.turn(Math.toRadians(180));
 
         // shoot 5x
         roboto.autoStartShoot(shooterAngle, vel);
@@ -88,7 +88,7 @@ public class Auto1 extends LinearOpMode {
         }
         roboto.autoStopShoot();
 
-        // drive.turn(Math.toRadians(180));
+        drive.turn(Math.toRadians(180));
 
         roboto.setIntakeMode(true);
 
