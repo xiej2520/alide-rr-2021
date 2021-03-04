@@ -1,12 +1,10 @@
-# Road Runner Quickstart
+# ALIDE 2020-2021 FTC Season Ultimate Goal Robot Controller App
 
-An example FTC project using [Road Runner](https://github.com/acmerobotics/road-runner). **Note:** Road Runner is in alpha and many of its APIs are incubating.
+Built off of [Road Runner Quickstart](https://github.com/acmerobotics/road-runner-quickstart).
 
 ## Installation
 
-For more detailed instructions on getting Road Runner setup in your own project, see the [Road Runner README](https://github.com/acmerobotics/road-runner#core).
-
-1. Download or clone this repo with `git clone https://github.com/acmerobotics/road-runner-quickstart`.
+1. Download or clone this repo with `git clone https://gitlab.com/ftc-13847/alide-rr-2021`.
 
 1. Open the project in Android Studio and build `TeamCode` like any other `ftc_app` project.
 
@@ -14,4 +12,6 @@ For more detailed instructions on getting Road Runner setup in your own project,
 
 ## Documentation
 
-Check out the new [online quickstart documentation](https://acme-robotics.gitbook.io/road-runner/quickstart/introduction).
+[Roadrunner Quickstart documentation](https://acme-robotics.gitbook.io/road-runner/quickstart/introduction).
+
+[Learn Roadrunner](https://www.learnroadrunner.com/)
