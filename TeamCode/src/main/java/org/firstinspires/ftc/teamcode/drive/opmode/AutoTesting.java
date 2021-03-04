@@ -18,26 +18,25 @@ public class AutoTesting extends LinearOpMode {
 
     private FtcDashboard dashboard;
 
-    public static Vector2d test = new Vector2d(-60, 48);
+    public static Pose2d testP = new Pose2d(0, 0, Math.toRadians(0));
+    public static Vector2d testV = new Vector2d(10, 10);
 
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Robot roboto = new Robot(hardwareMap);
 
-        Pose2d startPose = new Pose2d(-60, 48, Math.toRadians(0));
+        Pose2d startPose = testP;
         drive.setPoseEstimate(startPose);
 
         dashboard = roboto.drive.dashboard;
 
-        Trajectory testTraj = drive.trajectoryBuilder(new Pose2d()) // move to launch line
-                .lineTo(test)
+        Trajectory testTraj = drive.trajectoryBuilder(testP) // move to launch line
+                .splineTo(testV, Math.toRadians(0))
                 .build();
 
         waitForStart();
 
-        while (opModeIsActive()) {
-            drive.followTrajectory(testTraj);
-        }
+        drive.followTrajectory(testTraj);
     }
 }

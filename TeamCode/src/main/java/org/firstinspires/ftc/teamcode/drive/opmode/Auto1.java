@@ -20,7 +20,8 @@ public class Auto1 extends LinearOpMode {
 
     public static Pose2d start = new Pose2d(-60, 48, Math.toRadians(180));
     public static Pose2d zoneA = new Pose2d(12.0, 60.0, Math.toRadians(180));
-    public static Pose2d launchPos = new Pose2d(0.0, 36.0, Math.toRadians(0));
+    public static Pose2d launchPos = new Pose2d(0.0, 36.0, Math.toRadians(180));
+    public static Pose2d launchPos2 = new Pose2d(0.0, 36.0, Math.toRadians(0));
     public static Pose2d rings = new Pose2d(-36, 36, Math.toRadians(180));
     public static Pose2d launchLine = new Pose2d(12, 36, Math.toRadians(0));
 
@@ -44,23 +45,23 @@ public class Auto1 extends LinearOpMode {
         dashboard = roboto.drive.dashboard;
 
         Trajectory startToZoneA = drive.trajectoryBuilder(start) // moves around rings and then positions on zone A so the wobble goal can be delivered
-                .splineTo(zoneAV, Math.toRadians(180))
+                .splineToConstantHeading(zoneAV, Math.toRadians(180))
                 .build();
 
         Trajectory zoneAToLaunchPos = drive.trajectoryBuilder(zoneA) // moves around rings and then positions on zone A so the wobble goal can be delivered
-                .splineTo(launchPosV, Math.toRadians(0))
+                .splineToLinearHeading(launchPos, Math.toRadians(0))
                 .build();
 
-        Trajectory launchToRing = drive.trajectoryBuilder(launchPos) // move to rings to pick up
-                .splineTo(ringsV, Math.toRadians(180))
+        Trajectory launchToRing = drive.trajectoryBuilder(launchPos2) // move to rings to pick up
+                .splineToConstantHeading(ringsV, Math.toRadians(180))
                 .build();
 
         Trajectory ringsToLaunchPos = drive.trajectoryBuilder(rings) // move to launch position
-                .splineTo(launchPosV, Math.toRadians(0))
+                .splineToConstantHeading(launchPosV, Math.toRadians(0))
                 .build();
 
         Trajectory launchPosToLaunchLine = drive.trajectoryBuilder(launchPos) // move to launch line
-                .splineTo(launchLineV, Math.toRadians(0))
+                .splineToConstantHeading(launchLineV, Math.toRadians(0))
                 .build();
 
         waitForStart();
