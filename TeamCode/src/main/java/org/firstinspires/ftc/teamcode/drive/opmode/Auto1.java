@@ -18,10 +18,17 @@ public class Auto1 extends LinearOpMode {
 
     private FtcDashboard dashboard;
 
-    public static Vector2d zoneA = new Vector2d(12.0, 60.0);
-    public static Vector2d launchPos = new Vector2d(0.0, 36.0);
-    public static Vector2d rings = new Vector2d(-36, 36);
-    public static Vector2d launchLine = new Vector2d(12, 36);
+    public static Pose2d start = new Pose2d(-60, 48, Math.toRadians(180));
+    public static Pose2d zoneA = new Pose2d(12.0, 60.0, Math.toRadians(180));
+    public static Pose2d launchPos = new Pose2d(0.0, 36.0, Math.toRadians(0));
+    public static Pose2d rings = new Pose2d(-36, 36, Math.toRadians(180));
+    public static Pose2d launchLine = new Pose2d(12, 36, Math.toRadians(0));
+
+    public static Vector2d startV = new Vector2d(-60, 48);
+    public static Vector2d zoneAV = new Vector2d(12.0, 60.0);
+    public static Vector2d launchPosV = new Vector2d(0.0, 36.0);
+    public static Vector2d ringsV = new Vector2d(-36, 36);
+    public static Vector2d launchLineV = new Vector2d(12, 36);
 
     public static double shooterAngle = .3;
     public static double vel = -1200;
@@ -36,67 +43,69 @@ public class Auto1 extends LinearOpMode {
 
         dashboard = roboto.drive.dashboard;
 
-        Trajectory startToZoneA = drive.trajectoryBuilder(new Pose2d(), true) // moves around rings and then positions on zone A so the wobble goal can be delivered
-                .splineTo(zoneA, Math.toRadians(180))
+        Trajectory startToZoneA = drive.trajectoryBuilder(start) // moves around rings and then positions on zone A so the wobble goal can be delivered
+                .splineTo(zoneAV, Math.toRadians(180))
                 .build();
 
-        Trajectory launchToRing = drive.trajectoryBuilder(new Pose2d()) // move to rings to pick up
-                .lineTo(rings)
+        Trajectory zoneAToLaunchPos = drive.trajectoryBuilder(zoneA) // moves around rings and then positions on zone A so the wobble goal can be delivered
+                .splineTo(launchPosV, Math.toRadians(0))
                 .build();
 
-        Trajectory toLaunchPos = drive.trajectoryBuilder(new Pose2d()) // move to launch position
-                .lineTo(launchPos)
+        Trajectory launchToRing = drive.trajectoryBuilder(launchPos) // move to rings to pick up
+                .splineTo(ringsV, Math.toRadians(180))
                 .build();
 
-        Trajectory toLaunchLine = drive.trajectoryBuilder(new Pose2d()) // move to launch line
-                .lineTo(launchLine)
+        Trajectory ringsToLaunchPos = drive.trajectoryBuilder(rings) // move to launch position
+                .splineTo(launchPosV, Math.toRadians(0))
+                .build();
+
+        Trajectory launchPosToLaunchLine = drive.trajectoryBuilder(launchPos) // move to launch line
+                .splineTo(launchLineV, Math.toRadians(0))
                 .build();
 
         waitForStart();
 
-        while (opModeIsActive() && !isStopRequested()) {
-            drive.followTrajectory(startToZoneA);
+        drive.followTrajectory(startToZoneA);
 
-            // open wobble goal method
+        // open wobble goal method
 
-            drive.followTrajectory(toLaunchPos);
+        drive.followTrajectory(zoneAToLaunchPos);
 
-            drive.turn(Math.toRadians(180));
+        // drive.turn(Math.toRadians(180));
 
-            // shoot 5x
-            roboto.autoStartShoot(shooterAngle, vel);
-            for (int i = 0; i < 5; i++) {
-                roboto.setRingPusherMode(true);
-                sleep(100);
-                roboto.setRingPusherMode(false);
-                sleep(100);
-            }
-            roboto.autoStopShoot();
-
-            drive.turn(Math.toRadians(180));
-
-            roboto.setIntakeMode(true);
-
-            drive.followTrajectory(launchToRing);
-
-            roboto.setIntakeMode(false);
-
-            drive.turn(Math.toRadians(180));
-
-            drive.followTrajectory(toLaunchPos);
-
-            // shoot 5x
-            roboto.autoStartShoot(shooterAngle, vel);
-            for (int i = 0; i < 5; i++) {
-                roboto.setRingPusherMode(true);
-                sleep(100);
-                roboto.setRingPusherMode(false);
-                sleep(100);
-            }
-            roboto.autoStopShoot();
-
-            drive.followTrajectory(toLaunchLine);
+        // shoot 5x
+        roboto.autoStartShoot(shooterAngle, vel);
+        for (int i = 0; i < 5; i++) {
+            roboto.setRingPusherMode(true);
+            sleep(100);
+            roboto.setRingPusherMode(false);
+            sleep(100);
         }
+        roboto.autoStopShoot();
+
+        drive.turn(Math.toRadians(180));
+
+        roboto.setIntakeMode(true);
+
+        drive.followTrajectory(launchToRing);
+
+        roboto.setIntakeMode(false);
+
+        drive.turn(Math.toRadians(180));
+
+        drive.followTrajectory(ringsToLaunchPos);
+
+        // shoot 5x
+        roboto.autoStartShoot(shooterAngle, vel);
+        for (int i = 0; i < 5; i++) {
+            roboto.setRingPusherMode(true);
+            sleep(100);
+            roboto.setRingPusherMode(false);
+            sleep(100);
+        }
+        roboto.autoStopShoot();
+
+        drive.followTrajectory(launchPosToLaunchLine);
     }
 }
 
