@@ -34,6 +34,9 @@ public class Auto1 extends LinearOpMode {
     public static double shooterAngle = .3;
     public static double vel = -1200;
 
+    public static int shootCount = 5;
+    public static int shootWait = 1000;
+
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -76,15 +79,16 @@ public class Auto1 extends LinearOpMode {
 
         // shoot 5x
         roboto.autoStartShoot(shooterAngle, vel);
-        for (int i = 0; i < 5; i++) {
+        sleep(2000);
+        for (int i = 0; i < shootCount; i++) {
             roboto.setRingPusherMode(true);
-            sleep(100);
+            sleep(shootWait);
             roboto.setRingPusherMode(false);
-            sleep(100);
+            sleep(shootWait);
         }
         roboto.autoStopShoot();
 
-        drive.turn(Math.toRadians(180));
+        // drive.turn(Math.toRadians(180));
 
         roboto.setIntakeMode(true);
 
@@ -98,11 +102,12 @@ public class Auto1 extends LinearOpMode {
 
         // shoot 5x
         roboto.autoStartShoot(shooterAngle, vel);
-        for (int i = 0; i < 5; i++) {
+        sleep(2000);
+        for (int i = 0; i < shootCount; i++) {
             roboto.setRingPusherMode(true);
-            sleep(100);
+            sleep(shootWait);
             roboto.setRingPusherMode(false);
-            sleep(100);
+            sleep(shootWait);
         }
         roboto.autoStopShoot();
 
