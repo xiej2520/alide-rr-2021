@@ -5,115 +5,132 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 @Config
 public class Robot {
+    // Roadrunner sample mecanum drive implementation
     public SampleMecanumDrive drive;
 
+    // Motors and Servos
+    private DcMotorEx intakeTop; // top roller (big wheels)
+    private DcMotorEx intakeBottom; // bottom roller (small wheels + ramp)
 
-    /* Motors and Servos */
-    private DcMotorEx intake1; // top roller (big wheels)
-    private DcMotorEx intake2; // bottom roller (small wheels + ramp)
-    private DcMotorEx shooter1;
-    private DcMotorEx shooter2;
+    private DcMotorEx shooterFront;
+    private DcMotorEx shooterBack;
     private Servo shooterAngle;
+
     private Servo ringBlocker;
     private Servo ringPusher;
+
     private Servo wobbleGrabber;
 
-    /* Robot state variables */
-    private boolean intakeMode;
+    // Robot state variables
+    private Pose2d vel;
+
+    private boolean intakeMode; // true:on, false:off
     private boolean intakeDirection; // true:in, false:out
+
     private boolean ringBlockerMode;
     private boolean ringPusherMode;
+
     private double shooterAnglePos;
     private double shooterAngleDeg;
-    private Pose2d vel;
     private double shooterVelocity;
+
     private boolean wobbleGrabberMode;
 
-    /* Config variables */
+    // Config variables
+    public static double shooterPower;
+
     public static double ringBlockerOffPos = 0.23;
     public static double ringBlockerOnPos = 0.35;
     public static double ringPusherOnPos = 0.12;
     public static double ringPusherOffPos = 0.31;
 
-    public static double shooterAngleMaxPos = 0.7; // ~0 degrees, almost hits plastic
-    public static double shooterAngleMinPos = 0.07; // 90 degrees up
-    public static double shooterAngleMinDeg = 0;
-    public static double shooterAngleMaxDeg = 90;
+    public static double shooterAnglePosMax = 0.7; // ~0 degrees, almost hits plastic
+    public static double shooterAnglePosMin = 0.07; // 90 degrees up
+    public static double shooterAngleDegMin = 0; // from horizontal
+    public static double shooterAngleDegMax = 90; // from horizontal
 
-    public static double wobbleGrabberPosMax = 0.85;
-    public static double wobbleGrabberPosMin = 0.3;
+    public static double wobbleGrabberPosMax = 0.85; // closed
+    public static double wobbleGrabberPosMin = 0.3; // open
 
 
     public Robot(HardwareMap hardwareMap) {
+        // initialize
         drive = new SampleMecanumDrive(hardwareMap);
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        intake1 = hardwareMap.get(DcMotorEx.class, "intake1");
-        intake2 = hardwareMap.get(DcMotorEx.class, "intake2");
-        shooter1 = hardwareMap.get(DcMotorEx.class, "shooter1");
-        shooter2 = hardwareMap.get(DcMotorEx.class, "shooter2");
+        intakeTop = hardwareMap.get(DcMotorEx.class, "intake1");
+        intakeBottom = hardwareMap.get(DcMotorEx.class, "intake2");
+
+        shooterFront = hardwareMap.get(DcMotorEx.class, "shooter1");
+        shooterBack = hardwareMap.get(DcMotorEx.class, "shooter2");
         shooterAngle = hardwareMap.get(Servo.class, "shooterAngle");
+
         ringBlocker = hardwareMap.get(Servo.class, "ringBlocker");
         ringPusher = hardwareMap.get(Servo.class, "ringPusher");
+
         wobbleGrabber = hardwareMap.get(Servo.class, "wobbleGrabber");
 
-        intake1.setDirection(DcMotor.Direction.REVERSE); // intake motors need to be opposite directions
-        shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        intakeMode = false;
-        intakeDirection = true;
-        ringBlockerMode = true;
-        ringPusherMode = false;
+        // intake motors need to be opposite directions
+        intakeTop.setDirection(DcMotor.Direction.REVERSE);
+
+        // Using setVelocity()
+        shooterFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterFront.setDirection(DcMotor.Direction.REVERSE);
+        shooterBack.setDirection(DcMotor.Direction.REVERSE);
+        shooterFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shooterBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
         vel = new Pose2d(0, 0, 0);
+
+        setIntakeMode(false);
+        setIntakeDirection(true);
+
+        setShooterVelocity(0);
+        setShooterAngle(shooterAnglePosMax);
 
         setRingBlockerMode(true);
         setRingPusherMode(false);
 
-        shooterAnglePos = shooterAngleMaxPos;
-        shooterAngleDeg = 0;
-        setShooterAngle(shooterAngleMaxPos);
-        shooterVelocity = 0;
-
+        setWobbleGrabberMode(false);
     }
 
-    public boolean getIntakeMode() {
-        return intakeMode;
-    }
+    public boolean getIntakeMode() { return intakeMode; }
     public void setIntakeMode(boolean mode) {
-        if (mode == true) {
+        if (mode) {
             intakeMode = true;
-            if (intakeDirection == true) {
-                intake1.setPower(1);
-                intake2.setPower(1);
+            if (intakeDirection) {
+                intakeTop.setPower(shooterPower);
+                intakeBottom.setPower(shooterPower);
             }
             else {
-                intake1.setPower(-1);
-                intake2.setPower(-1);
+                intakeTop.setPower(-shooterPower);
+                intakeBottom.setPower(-shooterPower);
             }
         }
         else {
             intakeMode = false;
-            intake1.setPower(0);
-            intake2.setPower(0);
+            intakeTop.setPower(0);
+            intakeBottom.setPower(0);
         }
     }
+
     public boolean getIntakeDirection() { return intakeDirection; }
     public void setIntakeDirection(boolean direction) {
         intakeDirection = direction;
     }
 
-    public boolean getRingBlockerMode() {
-        return ringBlockerMode;
-    }
+    public boolean getRingBlockerMode() { return ringBlockerMode; }
     public void setRingBlockerMode(boolean mode) {
-        if (mode == true) {
+        if (mode) {
             ringBlockerMode = true;
             ringBlocker.setPosition(ringBlockerOnPos);
         }
@@ -123,11 +140,9 @@ public class Robot {
         }
     }
 
-    public boolean getRingPusherMode() {
-        return ringPusherMode;
-    }
+    public boolean getRingPusherMode() { return ringPusherMode; }
     public void setRingPusherMode(boolean mode) {
-        if (mode == true) {
+        if (mode) {
             ringPusherMode = true;
             ringPusher.setPosition(ringPusherOnPos);
         }
@@ -136,61 +151,49 @@ public class Robot {
             ringPusher.setPosition(ringPusherOffPos);
         }
     }
+
     public Pose2d getVel() { return vel; }
     public void setVel(Pose2d v) {
         vel = v;
     }
 
-    public double getShooterVelocity() {
-        return shooterVelocity;
-    }
+    public double getShooterVelocity() { return shooterVelocity; }
     public void setShooterVelocity(double v) {
-        shooter1.setVelocity(v);
-        shooter2.setVelocity(v);
-        this.shooterVelocity = v;
+        shooterVelocity = v;
+        shooterFront.setVelocity(v);
+        shooterBack.setVelocity(v);
     }
 
-    public void changeShooterAngle(double delta) {
-        if (shooterAnglePos + delta > shooterAngleMaxPos) {
-            setShooterAngle(shooterAngleMaxPos);
-        }
-        else if (shooterAnglePos + delta < shooterAngleMinPos) {
-            setShooterAngle(shooterAngleMinPos);
-        }
-        else {
-            setShooterAngle(shooterAnglePos + delta);
-        }
-    }
-    public double getShooterAnglePos() {
-        return shooterAnglePos;
-    }
-    public double getShooterAngleDeg() {
-        return shooterAngleDeg;
-    }
+    public double getShooterAnglePos() { return shooterAnglePos; }
+    public double getShooterAngleDeg() { return shooterAngleDeg; }
     public void setShooterAngle(double pos) {
-        shooterAnglePos = pos;
-        shooterAngleDeg = linearMap(pos, shooterAngleMaxPos, shooterAngleMinPos, shooterAngleMinDeg, shooterAngleMaxDeg);
-        shooterAngle.setPosition(pos);
+        double limitedPos = Math.min(pos, shooterAnglePosMax);
+        limitedPos = Math.max(limitedPos, shooterAnglePosMin);
+
+        shooterAnglePos = limitedPos;
+        shooterAngleDeg = linearMap(limitedPos, shooterAnglePosMax, shooterAnglePosMin, shooterAngleDegMin, shooterAngleDegMax);
+        shooterAngle.setPosition(limitedPos);
     }
     public void setShooterAngleDeg(double angle) {
-        setShooterAngle(linearMap(angle, shooterAngleMinDeg, shooterAngleMaxDeg, shooterAngleMaxPos, shooterAngleMinPos));
+        double limitedAngle = Math.min(angle, shooterAngleDegMax);
+        limitedAngle = Math.max(limitedAngle, shooterAngleDegMin);
+
+        setShooterAngle(linearMap(limitedAngle, shooterAngleDegMin, shooterAngleDegMax, shooterAnglePosMax, shooterAnglePosMin));
     }
 
     public double linearMap(double val, double oldMin, double oldMax, double newMin, double newMax) {
-        return newMin + (newMax-newMin) / (oldMax-oldMin) * (val - oldMin);
+        return newMin + (newMax - newMin) / (oldMax-oldMin) * (val - oldMin);
     }
 
-    public boolean getWobbleGrabberMode() {
-        return this.wobbleGrabberMode;
-    }
+    public boolean getWobbleGrabberMode() { return wobbleGrabberMode; }
     public void setWobbleGrabberMode(boolean mode) {
-        if (mode == true) {
-            wobbleGrabber.setPosition(wobbleGrabberPosMax);
+        if (mode) {
             wobbleGrabberMode = true;
+            wobbleGrabber.setPosition(wobbleGrabberPosMax);
         }
         else {
-            wobbleGrabber.setPosition(wobbleGrabberPosMin);
             wobbleGrabberMode = false;
+            wobbleGrabber.setPosition(wobbleGrabberPosMin);
         }
     }
 
