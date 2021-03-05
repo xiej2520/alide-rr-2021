@@ -21,8 +21,8 @@ public class Teleop1Controller extends LinearOpMode{
 
     private FtcDashboard dashboard;
 
-    public static double shooterVelocity = 1200;
-    public static double shooterAngleConfig = 0;
+    public static double shooterVelocity = 2000;
+    public static double shooterAngleConfig = 45;
 
 
     @Override
@@ -85,6 +85,8 @@ public class Teleop1Controller extends LinearOpMode{
             roboto.drive.setDrivePower(roboto.getVel());
             roboto.drive.update();
 
+            telemetry.addData("shooterFront Power", roboto.getShooterFrontPower());
+            telemetry.addData("shooterBack Power", roboto.getShooterBackPower());
             telemetry.update();
 
             Pose2d myPose = roboto.drive.getPoseEstimate();

@@ -55,8 +55,8 @@ public class Teleop2Controllers extends LinearOpMode{
         controller2.addEventListener("a", ButtonState.HELD, () -> roboto.setShooterVelocity(shooterVelocity));
         controller2.addEventListener("a", ButtonState.OFF, () -> roboto.setShooterVelocity(0));
         // Large change in shooter angle with dpad_up and dpad_down
-        controller2.addEventListener("dpad_up", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+5));
-        controller2.addEventListener("dpad_down", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-5));
+        controller2.addEventListener("dpad_up", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+10));
+        controller2.addEventListener("dpad_down", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-10));
         // Small change in shooter angle with left stick y
         controller2.addEventListener("left_stick_y", AnalogCheck.LESS_THAN, -0.1, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-1));
         controller2.addEventListener("left_stick_y", AnalogCheck.GREATER_THAN, 0.1, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+1));

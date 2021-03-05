@@ -161,6 +161,8 @@ public class Robot {
     }
 
     public double getShooterVelocity() { return shooterVelocity; }
+    public double getShooterFrontPower() { return shooterFront.getPower(); }
+    public double getShooterBackPower() { return shooterBack.getPower(); }
     public void setShooterVelocity(double v) {
         shooterVelocity = v;
         shooterFront.setVelocity(v);
