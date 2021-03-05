@@ -73,7 +73,7 @@ public class Auto1 extends LinearOpMode {
         drive.followTrajectory(startToZoneA1);
         drive.followTrajectory(startToZoneA2);
 
-        roboto.setShooterAngleDeg(roboto.shooterAngleMaxDeg);
+        roboto.setShooterAngleDeg(roboto.shooterAngleDegMax);
         sleep(500);
         roboto.setWobbleGrabberMode(false);
         sleep(500);
