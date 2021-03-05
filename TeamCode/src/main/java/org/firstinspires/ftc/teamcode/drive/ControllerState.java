@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 /* Event handling inspiration from: https://codereview.stackexchange.com/questions/203642/event-handling-gamepad-in-java */
 public class ControllerState {
     public Gamepad gamepad;
@@ -34,6 +33,7 @@ public class ControllerState {
     private Map<AnalogEvent, EventHandler> analogEventListeners = new HashMap<>();
 
     public ControllerState(Gamepad g) {
+        // Map gamepad buttons, sticks, and triggers to Button and Analog
         gamepad = g;
 
         left_stick_x = new Analog();
@@ -73,13 +73,13 @@ public class ControllerState {
         buttonMap.put("left_bumper", left_bumper);
         buttonMap.put("right_bumper", right_bumper);
     }
-    public boolean getButtonValue(String buttonName) {
-        return buttonMap.get(buttonName).getValue();
-    }
+    // Allow accessing button and analog values with string name outside class
+    public boolean getButtonValue(String buttonName) { return buttonMap.get(buttonName).getValue(); }
     public double getAnalogValue(String analogName) {
         return analogMap.get(analogName).getValue();
     }
 
+    // Updates all buttons and analogs
     public void updateControllerState() {
         left_stick_x.update(gamepad.left_stick_x);
         left_stick_y.update(gamepad.left_stick_y);
@@ -100,6 +100,7 @@ public class ControllerState {
         right_bumper.update(gamepad.right_bumper);
     }
 
+    // Add event listeners in teleop
     public void addEventListener(String buttonName, ButtonState state, EventHandler handler) {
         buttonEventListeners.put(new ButtonEvent(buttonMap.get(buttonName), state), handler);
     }
@@ -107,20 +108,22 @@ public class ControllerState {
         analogEventListeners.put(new AnalogEvent(analogMap.get(analogName), condition, bound), handler);
     }
 
+    // Checks events, runs execute()
     public void handleEvents() {
         for (Entry<ButtonEvent, EventHandler> entry: buttonEventListeners.entrySet()) {
-            if (entry.getKey().checkEvent() == true) {
+            if (entry.getKey().checkEvent()) {
                 entry.getValue().execute();
             }
         }
         for (Entry<AnalogEvent, EventHandler> entry: analogEventListeners.entrySet()) {
-            if (entry.getKey().checkEvent() == true) {
+            if (entry.getKey().checkEvent()) {
                 entry.getValue().execute();
             }
         }
     }
 }
 
+// Model of a controller Button
 class Button {
     private boolean value;
     private ButtonState state;
@@ -136,33 +139,37 @@ class Button {
     public ButtonState getState() {
         return state;
     }
+
+    // Implementing state machine for Button
+    // OFF -> PRESSED -> HELD -> OFF
     public void update(boolean newValue) {
         if (state == ButtonState.OFF) {
-            if (newValue == false) {}
-            else if (newValue == true) {
+            if (newValue) {
                 value = true;
                 state = ButtonState.PRESSED;
             }
+            // else stay false and OFF
         }
         else if (state == ButtonState.PRESSED) {
-            if (newValue == false) {
+            if (newValue) {
+                state = ButtonState.HELD;
+            }
+            else {
                 value = false;
                 state = ButtonState.OFF;
-            }
-            else if (newValue = true) {
-                state = ButtonState.HELD;
             }
         }
         else if (state == ButtonState.HELD) {
-            if (newValue == false) {
+            if (!newValue) {
                 value = false;
                 state = ButtonState.OFF;
             }
-            else if (newValue == true) {}
+            // else stay true and HELD
         }
     }
 }
 
+// Holds Button & ButtonState event check
 class ButtonEvent {
     private Button button;
     private ButtonState state;
@@ -171,16 +178,11 @@ class ButtonEvent {
         state = s;
     }
     public boolean checkEvent() {
-        if (button.getState() == state) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return button.getState() == state;
     }
 }
 
-
+// Model of controller sticks and triggers
 class Analog {
     private double value;
     public Analog() {
@@ -194,6 +196,7 @@ class Analog {
     }
 }
 
+// Holds Analog and an [in]equality condition
 class AnalogEvent {
     private Analog analog;
     private AnalogCheck condition;
@@ -220,6 +223,7 @@ class AnalogEvent {
         else if (condition == AnalogCheck.LESS_THAN) {
             return analog.getValue() < bound;
         }
+        // To be implemented ?
         else if (condition == AnalogCheck.READ) {
             return true;
         }
