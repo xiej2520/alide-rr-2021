@@ -150,31 +150,6 @@ public class Robot {
         this.shooterVelocity = v;
     }
 
-    /*
-    public void changeShooterAngle(int delta) {
-        if (shooterAngle.getTargetPosition() + delta < shooterAngleMaxPos) {
-            shooterAngle.setTargetPosition(shooterAngleMaxPos);
-        }
-        else if (shooterAngle.getTargetPosition() + delta > 0) {
-            shooterAngle.setTargetPosition(0);
-        }
-        else {
-            shooterAngle.setTargetPosition(shooterAngle.getCurrentPosition() + delta);
-        }
-
-        if (shooterAngle.getCurrentPosition() < shooterAngle.getTargetPosition()) {
-            shooterAngle.setPower(0.1);
-        }
-        else if (shooterAngle.getCurrentPosition() > shooterAngle.getTargetPosition()) {
-            shooterAngle.setPower(-0.1);
-        }
-        else {
-            shooterAngle.setPower(0);
-        }
-
-        shooterAnglePos = shooterAngle.getCurrentPosition();
-    }
-    */
     public void changeShooterAngle(double delta) {
         if (shooterAnglePos + delta > shooterAngleMaxPos) {
             setShooterAngle(shooterAngleMaxPos);
@@ -217,6 +192,18 @@ public class Robot {
             wobbleGrabber.setPosition(wobbleGrabberPosMin);
             wobbleGrabberMode = false;
         }
+    }
+
+    public void autoStartShoot(double pos, double v) {
+        setShooterAngle(pos);
+        setShooterVelocity(v);
+        setRingBlockerMode(false);
+    }
+
+    public void autoStopShoot() {
+        setShooterAngle(0);
+        setShooterVelocity(0);
+        setRingBlockerMode(true);
     }
 
 }
