@@ -78,11 +78,11 @@ public class Teleop1Controller extends LinearOpMode{
                     -Math.pow(controller1.getAnalogValue("left_stick_x"), 3),
                     -Math.pow(controller1.getAnalogValue("right_stick_x"), 3)));
 
-            roboto.drive.setDrivePower(roboto.getVel()); // Joystick driving
 
             controller1.handleEvents();
 
             // Allow dpad override
+            roboto.drive.setDrivePower(roboto.getVel());
             roboto.drive.update();
 
             telemetry.update();

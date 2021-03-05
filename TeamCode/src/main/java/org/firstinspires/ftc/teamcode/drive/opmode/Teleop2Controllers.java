@@ -36,12 +36,12 @@ public class Teleop2Controllers extends LinearOpMode{
 
         // Controller 1
         // Small changes in robot position with dpad, will override joysticks
-        controller1.addEventListener("dpad_up", ButtonState.HELD, () -> roboto.setVel(new Pose2d(0.1, 0, 0)));
-        controller1.addEventListener("dpad_down", ButtonState.HELD, () -> roboto.setVel(new Pose2d(-0.1, 0, 0)));
-        controller1.addEventListener("dpad_left", ButtonState.HELD, () -> roboto.setVel(new Pose2d(0, 0.1, 0)));
-        controller1.addEventListener("dpad_right", ButtonState.HELD, () -> roboto.setVel(new Pose2d(0, -0.1, 0)));
-        controller1.addEventListener("left_trigger", AnalogCheck.GREATER_THAN, 0.1, () -> roboto.setVel(new Pose2d(0, 0, 10)));
-        controller1.addEventListener("right_trigger", AnalogCheck.GREATER_THAN, 0.1, () -> roboto.setVel(new Pose2d(0, 0, -10)));
+        controller1.addEventListener("dpad_up", ButtonState.HELD, () -> roboto.setVel(new Pose2d(0.25, 0, 0)));
+        controller1.addEventListener("dpad_down", ButtonState.HELD, () -> roboto.setVel(new Pose2d(-0.25, 0, 0)));
+        controller1.addEventListener("dpad_left", ButtonState.HELD, () -> roboto.setVel(new Pose2d(0, 0.25, 0)));
+        controller1.addEventListener("dpad_right", ButtonState.HELD, () -> roboto.setVel(new Pose2d(0, -0.25, 0)));
+        controller1.addEventListener("left_trigger", AnalogCheck.GREATER_THAN, 0.1, () -> roboto.setVel(new Pose2d(0, 0, 0.2)));
+        controller1.addEventListener("right_trigger", AnalogCheck.GREATER_THAN, 0.1, () -> roboto.setVel(new Pose2d(0, 0, -0.2)));
 
         // Controller 2
         // Toggle intake on if shooter angle is less than 30, toggle off on other press
@@ -55,8 +55,11 @@ public class Teleop2Controllers extends LinearOpMode{
         controller2.addEventListener("a", ButtonState.HELD, () -> roboto.setShooterVelocity(shooterVelocity));
         controller2.addEventListener("a", ButtonState.OFF, () -> roboto.setShooterVelocity(0));
         // Large change in shooter angle with dpad_up and dpad_down
-        controller2.addEventListener("dpad_up", ButtonState.HELD, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+10));
-        controller2.addEventListener("dpad_down", ButtonState.HELD, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-10));
+        controller2.addEventListener("dpad_up", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+5));
+        controller2.addEventListener("dpad_down", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-5));
+        // Small change in shooter angle with left stick y
+        controller2.addEventListener("left_stick_y", AnalogCheck.LESS_THAN, -0.1, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-1));
+        controller2.addEventListener("left_stick_y", AnalogCheck.GREATER_THAN, 0.1, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+1));
         // Lower blocker if shooter is on and button is pressed
         controller2.addEventListener("left_trigger", AnalogCheck.GREATER_THAN, 0.1, () -> {
             if (roboto.getShooterVelocity() > 0) { roboto.setRingBlockerMode(false); }
@@ -82,12 +85,12 @@ public class Teleop2Controllers extends LinearOpMode{
                     -Math.pow(controller1.getAnalogValue("left_stick_x"), 3),
                     -Math.pow(controller1.getAnalogValue("right_stick_x"), 3)));
 
-            roboto.drive.setDrivePower(roboto.getVel()); // Joystick driving
 
             controller1.handleEvents();
             controller2.handleEvents();
 
             // Allow dpad override
+            roboto.drive.setDrivePower(roboto.getVel());
             roboto.drive.update();
 
             telemetry.update();

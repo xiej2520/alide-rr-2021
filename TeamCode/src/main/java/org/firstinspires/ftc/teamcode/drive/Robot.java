@@ -40,7 +40,7 @@ public class Robot {
     private double shooterAngleDeg;
     private double shooterVelocity;
 
-    private boolean wobbleGrabberMode;
+    private boolean wobbleGrabberMode; // true:closed, false: open
 
     // Config variables
     public static double shooterPower;
@@ -100,24 +100,23 @@ public class Robot {
         setRingBlockerMode(true);
         setRingPusherMode(false);
 
-        setWobbleGrabberMode(false);
+        setWobbleGrabberMode(true);
     }
 
     public boolean getIntakeMode() { return intakeMode; }
     public void setIntakeMode(boolean mode) {
-        if (mode) {
-            intakeMode = true;
+        intakeMode = mode;
+        if (intakeMode) {
             if (intakeDirection) {
-                intakeTop.setPower(shooterPower);
-                intakeBottom.setPower(shooterPower);
+                intakeTop.setPower(1);
+                intakeBottom.setPower(1);
             }
             else {
-                intakeTop.setPower(-shooterPower);
-                intakeBottom.setPower(-shooterPower);
+                intakeTop.setPower(-1);
+                intakeBottom.setPower(-1);
             }
         }
         else {
-            intakeMode = false;
             intakeTop.setPower(0);
             intakeBottom.setPower(0);
         }
@@ -126,6 +125,10 @@ public class Robot {
     public boolean getIntakeDirection() { return intakeDirection; }
     public void setIntakeDirection(boolean direction) {
         intakeDirection = direction;
+        // Intake power only updates when setIntakeMode is called
+        if (getIntakeMode()) {
+            setIntakeMode(getIntakeMode());
+        }
     }
 
     public boolean getRingBlockerMode() { return ringBlockerMode; }
