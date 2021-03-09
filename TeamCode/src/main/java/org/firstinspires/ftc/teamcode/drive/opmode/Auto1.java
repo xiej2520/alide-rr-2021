@@ -19,19 +19,22 @@ public class Auto1 extends LinearOpMode {
     private FtcDashboard dashboard;
 
     public static Pose2d startP = new Pose2d(-60, -48, Math.toRadians(180));
-    public static Pose2d launchPosP = new Pose2d(0.0, -36.0, Math.toRadians(180));
+    public static Pose2d launchPosP = new Pose2d(12, -48, Math.toRadians(180));
 
-    public static Vector2d zoneAV = new Vector2d(12.0, -60.0);
-    public static Vector2d middleStepV = new Vector2d(-24, -60.0);
-    public static Vector2d launchPosV = new Vector2d(0.0, -36.0);
-    public static Vector2d ringsV = new Vector2d(-36, -36);
-    public static Vector2d launchLineV = new Vector2d(12, -36);
+    public static Vector2d zoneAV = new Vector2d(-6, -60);
+    public static Vector2d middleStepV = new Vector2d(-24, -60);
+    public static Vector2d launchPosV = new Vector2d(12, -48);
+    public static Vector2d ringsV = new Vector2d(-36, -48);
+    public static Vector2d launchLineV = new Vector2d(18, -36);
 
-    public static double shooterAngle = 20;
+    public static double shooterAngle = 22;
     public static double vel = 1700;
+    public static double turnBeforeShoot = 150;
+    public static double turnBeforeRings = 125;
+    public static double turnBeforeShoot2 = 150;
 
     public static int shootCount = 3;
-    public static int shootWait = 750;
+    public static int shootWait = 650;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -55,13 +58,13 @@ public class Auto1 extends LinearOpMode {
                 .splineToLinearHeading(launchPosP, Math.toRadians(0))
                 .build();
 
-        Trajectory launchToRing = drive.trajectoryBuilder(zoneAToLaunchPos.end()
-                .plus(new Pose2d(0, 0, Math.toRadians(180)))) // robot turns before this traj
-                .splineToConstantHeading(ringsV, Math.toRadians(180))
+        Trajectory launchToRing = drive.trajectoryBuilder(zoneAToLaunchPos.end())
+                .forward(48)
                 .build();
 
-        Trajectory ringsToLaunchPos = drive.trajectoryBuilder(launchToRing.end())
-                .splineToConstantHeading(launchPosV, Math.toRadians(0))
+        Trajectory ringsToLaunchPos = drive.trajectoryBuilder(launchToRing.end()
+                .plus(new Pose2d(0, 0, Math.toRadians(turnBeforeShoot2))))
+                .splineTo(launchPosV, Math.toRadians(0))
                 .build();
 
         Trajectory launchPosToLaunchLine = drive.trajectoryBuilder(ringsToLaunchPos.end())
@@ -80,11 +83,11 @@ public class Auto1 extends LinearOpMode {
 
         drive.followTrajectory(zoneAToLaunchPos);
 
-        drive.turn(Math.toRadians(170));
+        drive.turn(Math.toRadians(turnBeforeShoot));
 
         // shoot 5x
         roboto.autoStartShoot(shooterAngle, vel);
-        sleep(3000);
+        sleep(1500);
         roboto.setRingBlockerMode(false);
         for (int i = 0; i < shootCount; i++) {
             roboto.setRingPusherMode(true);
@@ -94,22 +97,26 @@ public class Auto1 extends LinearOpMode {
         }
         roboto.autoStopShoot();
 
-        drive.turn(Math.toRadians(180));
+        drive.turn(Math.toRadians(turnBeforeRings));
 
-        /*
         roboto.setIntakeMode(true);
+
+        sleep(500);
 
         drive.followTrajectory(launchToRing);
 
+        sleep(1000);
+
         roboto.setIntakeMode(false);
 
-        drive.turn(Math.toRadians(180));
+        drive.turn(Math.toRadians(turnBeforeShoot2));
 
         drive.followTrajectory(ringsToLaunchPos);
 
         // shoot 5x
         roboto.autoStartShoot(shooterAngle, vel);
-        sleep(2000);
+        sleep(1500);
+        roboto.setRingBlockerMode(false);
         for (int i = 0; i < shootCount; i++) {
             roboto.setRingPusherMode(true);
             sleep(shootWait);
@@ -119,6 +126,5 @@ public class Auto1 extends LinearOpMode {
         roboto.autoStopShoot();
 
         drive.followTrajectory(launchPosToLaunchLine);
-         */
     }
 }
