@@ -206,7 +206,6 @@ public class Robot {
     public void autoStartShoot(double angle, double v) {
         setShooterAngleDeg(angle);
         setShooterVelocity(v);
-        setRingBlockerMode(false);
     }
 
     public void autoStopShoot() {
