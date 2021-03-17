@@ -55,8 +55,8 @@ public class DriveConstants {
      */
     // Deceleration part of curve is bad, robot matches target velocity and acceleration fine
     public static double kV = 0.0175; // 1.0 / rpmToVelocity(MAX_RPM);
-    public static double kA = 0.004; // 0;
-    public static double kStatic = 0;
+    public static double kA = 0.0045; // 0;
+    public static double kStatic = 0.02;
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,

@@ -21,18 +21,18 @@ public class Auto1 extends LinearOpMode {
     public static Pose2d startP = new Pose2d(-60, -48, Math.toRadians(180));
     public static Pose2d launchPosP = new Pose2d(12, -48, Math.toRadians(180));
 
-    public static Vector2d zoneAV = new Vector2d(6, -60);
+    public static Vector2d zoneAV = new Vector2d(0, -60);
     public static Vector2d middleStepV = new Vector2d(-24, -60);
-    public static Vector2d launchPosV = new Vector2d(12, -48);
+    public static Vector2d launchPosV = new Vector2d(6, -48);
     // public static Vector2d ringsV = new Vector2d(-36, -48); // ????????????
-    public static Vector2d launchLineV = new Vector2d(48, -36);
+    public static Vector2d launchLineV = new Vector2d(42, -36);
 
     public static double shooterAngle = 21;
     public static double vel = 1700;
-    public static double turnBeforeShoot = 180;
-    public static double turnBeforeRings = 135;
+    public static double turnBeforeShoot = 150;
+    public static double turnBeforeRings = 130;
     public static double turnBeforeShoot2 = 180;
-    public static double extraAdjustment = 0;
+    public static double extraAdjustment = 30;
 
     public static int shootCount = 3;
     public static int shootWait = 500;
@@ -87,7 +87,7 @@ public class Auto1 extends LinearOpMode {
 
         // shoot 5x
         roboto.autoStartShoot(shooterAngle, vel);
-        sleep(1250);
+        sleep(1100);
         roboto.setRingBlockerMode(false);
         for (int i = 0; i < shootCount; i++) {
             roboto.setRingPusherMode(true);
@@ -101,15 +101,15 @@ public class Auto1 extends LinearOpMode {
 
         roboto.setIntakeMode(true);
 
-        sleep(500);
+        sleep(100);
 
         drive.followTrajectory(launchToRing);
 
-        sleep(500);
-
-        roboto.setIntakeMode(false);
+        sleep(100);
 
         drive.turn(Math.toRadians(turnBeforeShoot2));
+
+        roboto.setIntakeMode(false);
 
         drive.followTrajectory(ringsToLaunchPos);
 
@@ -117,9 +117,9 @@ public class Auto1 extends LinearOpMode {
 
         // shoot 5x
         roboto.autoStartShoot(shooterAngle, vel);
-        sleep(1250);
+        sleep(1100);
         roboto.setRingBlockerMode(false);
-        for (int i = 0; i < shootCount; i++) {
+        for (int i = 0; i < shootCount - 1; i++) {
             roboto.setRingPusherMode(true);
             sleep(shootWait);
             roboto.setRingPusherMode(false);
@@ -128,5 +128,7 @@ public class Auto1 extends LinearOpMode {
         roboto.autoStopShoot();
 
         drive.followTrajectory(launchPosToLaunchLine);
+        roboto.setShooterAngleDeg(roboto.shooterAngleDegMax);
+        sleep(1500);
     }
 }
