@@ -77,7 +77,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         FOLLOW_TRAJECTORY
     }
 
-    public FtcDashboard dashboard;
+    private FtcDashboard dashboard;
     private NanoClock clock;
 
     private Mode mode;

@@ -29,8 +29,6 @@ public class AutoTesting extends LinearOpMode {
         Pose2d startPose = testP;
         drive.setPoseEstimate(startPose);
 
-        dashboard = roboto.drive.dashboard;
-
         Trajectory testTraj = drive.trajectoryBuilder(testP) // move to launch line
                 .splineTo(testV, Math.toRadians(0))
                 .build();

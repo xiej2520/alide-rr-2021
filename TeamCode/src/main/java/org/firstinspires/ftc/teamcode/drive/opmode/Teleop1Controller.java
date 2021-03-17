@@ -33,8 +33,6 @@ public class Teleop1Controller extends LinearOpMode{
 
         ControllerState controller1 = new ControllerState(gamepad1);
 
-        dashboard = roboto.drive.dashboard;
-
 
         // Toggle intake on if shooter angle is less than 30, toggle off on other press
         controller1.addEventListener("x", ButtonState.PRESSED, () -> {

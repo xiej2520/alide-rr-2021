@@ -18,8 +18,8 @@ public class Robot {
     private DcMotorEx intakeTop; // top roller (big wheels)
     private DcMotorEx intakeBottom; // bottom roller (small wheels + ramp)
 
-    private DcMotorEx shooterFront;
-    private DcMotorEx shooterBack;
+    public DcMotorEx shooterFront;
+    public DcMotorEx shooterBack;
     private Servo shooterAngle;
 
     private Servo ringBlocker;

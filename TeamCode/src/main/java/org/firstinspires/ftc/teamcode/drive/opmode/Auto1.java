@@ -45,7 +45,6 @@ public class Auto1 extends LinearOpMode {
         Pose2d startPose = new Pose2d(-60, -48, Math.toRadians(180));
         drive.setPoseEstimate(startPose);
 
-        dashboard = roboto.drive.dashboard;
 
         Trajectory startToZoneA1 = drive.trajectoryBuilder(startP)
                 .lineToConstantHeading(middleStepV)

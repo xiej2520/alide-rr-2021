@@ -32,8 +32,6 @@ public class Teleop2Controllers extends LinearOpMode{
         ControllerState controller1 = new ControllerState(gamepad1);
         ControllerState controller2 = new ControllerState(gamepad2);
 
-        dashboard = roboto.drive.dashboard;
-
         // Controller 1
         // Small changes in robot position with dpad, will override joysticks
         controller1.addEventListener("dpad_up", ButtonState.HELD, () -> roboto.setVel(new Pose2d(0.25, 0, 0)));
