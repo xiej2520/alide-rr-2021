@@ -21,7 +21,8 @@ public class Teleop2Controllers extends LinearOpMode{
 
     private FtcDashboard dashboard;
 
-    public static double shooterVelocity = -1200;
+    public static double shooterVelocity = 1600;
+    public static double shooterAnglePreset = 30;
 
     @Override
     public void runOpMode() {
@@ -43,21 +44,23 @@ public class Teleop2Controllers extends LinearOpMode{
 
         // Controller 2
         // Toggle intake on if shooter angle is less than 30, toggle off on other press
-        controller2.addEventListener("x", ButtonState.PRESSED, () -> {
+        controller2.addEventListener("dpad_up", ButtonState.PRESSED, () -> {
             if (roboto.getShooterAngleDeg() < 30 && !roboto.getIntakeMode()) { roboto.setIntakeMode(true); }
             else { roboto.setIntakeMode(false); }
         });
-        // Reverse intake direction with b
-        controller2.addEventListener("b", ButtonState.PRESSED, () -> roboto.setIntakeDirection(!roboto.getIntakeDirection()));
-        // Shooter on iff a is pressed
-        controller2.addEventListener("a", ButtonState.HELD, () -> roboto.setShooterVelocity(shooterVelocity));
-        controller2.addEventListener("a", ButtonState.OFF, () -> roboto.setShooterVelocity(0));
-        // Large change in shooter angle with dpad_up and dpad_down
-        controller2.addEventListener("dpad_up", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+10));
-        controller2.addEventListener("dpad_down", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-10));
+        // Reverse intake direction with dpad_down
+        controller2.addEventListener("dpad_down", ButtonState.PRESSED, () -> roboto.setIntakeDirection(!roboto.getIntakeDirection()));
+        // Shooter on iff b is pressed
+        controller2.addEventListener("b", ButtonState.HELD, () -> roboto.setShooterVelocity(shooterVelocity));
+        controller2.addEventListener("b", ButtonState.OFF, () -> roboto.setShooterVelocity(0));
+        // Large change in shooter angle with y and a
+        controller2.addEventListener("y", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+10));
+        controller2.addEventListener("a", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-10));
         // Small change in shooter angle with left stick y
         controller2.addEventListener("left_stick_y", AnalogCheck.LESS_THAN, -0.1, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-1));
         controller2.addEventListener("left_stick_y", AnalogCheck.GREATER_THAN, 0.1, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+1));
+        // Preset shooter angle
+        controller1.addEventListener("right_bumper", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(shooterAnglePreset));
         // Lower blocker if shooter is on and button is pressed
         controller2.addEventListener("left_trigger", AnalogCheck.GREATER_THAN, 0.1, () -> {
             if (roboto.getShooterVelocity() > 0) { roboto.setRingBlockerMode(false); }
@@ -68,8 +71,8 @@ public class Teleop2Controllers extends LinearOpMode{
             if (!roboto.getRingBlockerMode()) { roboto.setRingPusherMode(true); }
         });
         controller2.addEventListener("right_trigger", AnalogCheck.LESS_THAN_EQUALS, 0.1, () -> roboto.setRingPusherMode(false));
-        // Toggle wobble grabber with y
-        controller2.addEventListener("y", ButtonState.PRESSED, () -> roboto.setWobbleGrabberMode(!roboto.getWobbleGrabberMode()));
+        // Toggle wobble grabber with dpad_left
+        controller2.addEventListener("dpad_left", ButtonState.PRESSED, () -> roboto.setWobbleGrabberMode(!roboto.getWobbleGrabberMode()));
 
 
         waitForStart();
