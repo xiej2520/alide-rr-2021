@@ -54,8 +54,8 @@ public class DriveConstants {
      * empirically tuned.
      */
     // Deceleration part of curve is bad, robot matches target velocity and acceleration fine
-    public static double kV = 0.02; // 1.0 / rpmToVelocity(MAX_RPM);
-    public static double kA = 0.004; // 0;
+    public static double kV = 0.018; // 1.0 / rpmToVelocity(MAX_RPM);
+    public static double kA = 0.003; // 0;
     public static double kStatic = 0.02;
 
     /*

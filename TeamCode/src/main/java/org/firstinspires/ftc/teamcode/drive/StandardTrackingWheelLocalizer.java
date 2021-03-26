@@ -43,7 +43,9 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double WHEEL_RADIUS = 0.748; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 15.75; // in; distance between the left and right wheels
+    // TrackingWheelLateralDistanceTuner gives 15.965, but 16.3 is more accurate on FollowerPidTuner
+    // TrackWidthTuner consistently ends at ~178 -> Probably because of REV hub deceleration
+    public static double LATERAL_DISTANCE = 16.3; // in; distance between the left and right wheels
     public static double FORWARD_OFFSET = 1.5; // in; offset of the lateral wheel
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;

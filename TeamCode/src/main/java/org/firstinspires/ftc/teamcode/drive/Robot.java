@@ -81,6 +81,8 @@ public class Robot {
         intakeTop.setDirection(DcMotor.Direction.REVERSE);
 
         // Using setVelocity()
+        shooterFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooterBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooterFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterFront.setDirection(DcMotor.Direction.REVERSE);
