@@ -50,7 +50,7 @@ public class Robot {
     public static double ringPusherOnPos = 0.12;
     public static double ringPusherOffPos = 0.31;
 
-    public static double shooterAnglePosMax = 0.7; // ~0 degrees, almost hits plastic
+    public static double shooterAnglePosMax = 0.75; // ~0 degrees, almost hits plastic
     public static double shooterAnglePosMin = 0.07; // 90 degrees up
     public static double shooterAngleDegMin = 0; // from horizontal
     public static double shooterAngleDegMax = 90; // from horizontal
