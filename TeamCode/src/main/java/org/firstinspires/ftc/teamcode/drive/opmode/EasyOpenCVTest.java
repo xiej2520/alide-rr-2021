@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.RingCounter;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 
 import org.openftc.easyopencv.OpenCvCamera;
@@ -41,7 +42,10 @@ public class EasyOpenCVTest extends LinearOpMode{
         {
             @Override
             public void onOpened(){
-                camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+
+                RingCounter Processing = new RingCounter(320, 240);
+                camera.setPipeline(Processing);
             }
         });
         waitForStart();
