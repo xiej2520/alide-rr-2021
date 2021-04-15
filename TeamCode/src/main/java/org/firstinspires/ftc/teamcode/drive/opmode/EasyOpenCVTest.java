@@ -38,21 +38,24 @@ public class EasyOpenCVTest extends LinearOpMode{
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
+        RingCounter Processing = new RingCounter(320, 240);
+        camera.setPipeline(Processing);
+
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
             public void onOpened(){
                 camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-
-                RingCounter Processing = new RingCounter(320, 240);
-                camera.setPipeline(Processing);
             }
         });
         waitForStart();
 
         while (!isStopRequested()) {
-
-
+            telemetry.addData("Frame Count", camera.getFrameCount());
+            telemetry.addData("FPS", String.format("%.2f", camera.getFps()));
+            telemetry.addData("Count: ", Processing.count);
+            telemetry.addData("meanVal: ", Processing.meanVal);
+            telemetry.update();
         }
 
 
