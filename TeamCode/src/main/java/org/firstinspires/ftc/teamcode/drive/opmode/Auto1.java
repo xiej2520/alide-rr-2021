@@ -9,8 +9,13 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.RingCounter;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
 @Autonomous(group = "drive")
@@ -36,6 +41,8 @@ public class Auto1 extends LinearOpMode {
 
     public static int shootCount = 3;
     public static int shootWait = 500;
+
+    public int ringCount;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -70,6 +77,22 @@ public class Auto1 extends LinearOpMode {
         Trajectory launchPosToLaunchLine = drive.trajectoryBuilder(ringsToLaunchPos.end())
                 .splineToConstantHeading(launchLineV, Math.toRadians(0))
                 .build();
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "cameraMonitorViewId",
+                "id", hardwareMap.appContext.getPackageName()
+        );
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+
+        RingCounter Processing = new RingCounter();
+        camera.setPipeline(Processing);
+
+        camera.openCameraDeviceAsync(() -> camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
+
+        sleep(1000);
+        ringCount = Processing.getRingCount();
+        camera.closeCameraDevice();
 
         waitForStart();
 

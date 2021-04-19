@@ -24,7 +24,7 @@ public class EasyOpenCVTest extends LinearOpMode{
     private FtcDashboard dashboard;
 
     @Override
-    public void runOpMode() throws InterruptedException{
+    public void runOpMode() throws InterruptedException {
 
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
@@ -38,22 +38,16 @@ public class EasyOpenCVTest extends LinearOpMode{
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-        RingCounter Processing = new RingCounter(320, 240);
+        RingCounter Processing = new RingCounter();
         camera.setPipeline(Processing);
 
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened(){
-                camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-            }
-        });
+        camera.openCameraDeviceAsync(() -> camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
         waitForStart();
 
         while (!isStopRequested()) {
             telemetry.addData("Frame Count", camera.getFrameCount());
             telemetry.addData("FPS", String.format("%.2f", camera.getFps()));
-            telemetry.addData("Count: ", Processing.count);
+            telemetry.addData("Count: ", Processing.getRingCount());
             telemetry.addData("meanVal: ", Processing.meanVal);
             telemetry.update();
         }
