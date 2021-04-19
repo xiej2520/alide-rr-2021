@@ -47,15 +47,15 @@ public class Robot {
 
     public static double ringBlockerOffPos = 0.23;
     public static double ringBlockerOnPos = 0.35;
-    public static double ringPusherOnPos = 0.24;
-    public static double ringPusherOffPos = 0.45;
+    public static double ringPusherOnPos = 0.5;
+    public static double ringPusherOffPos = .26;
 
     public static double shooterAnglePosMax = 0.75; // ~0 degrees, almost hits plastic
     public static double shooterAnglePosMin = 0.07; // 90 degrees up
     public static double shooterAngleDegMin = 0; // from horizontal
     public static double shooterAngleDegMax = 90; // from horizontal
 
-    public static double wobbleGrabberPosMax = 0.85; // closed
+    public static double wobbleGrabberPosMax = 0.6; // closed
     public static double wobbleGrabberPosMin = 0.3; // open
 
 
