@@ -55,8 +55,8 @@ public class Robot {
     public static double shooterAngleDegMin = 0; // from horizontal
     public static double shooterAngleDegMax = 90; // from horizontal
 
-    public static double wobbleGrabberPosMax = 0.6; // closed
-    public static double wobbleGrabberPosMin = 0.3; // open
+    public static double wobbleGrabberPosMax = 0.3; // closed
+    public static double wobbleGrabberPosMin = 0.6; // open
 
 
     public Robot(HardwareMap hardwareMap) {
