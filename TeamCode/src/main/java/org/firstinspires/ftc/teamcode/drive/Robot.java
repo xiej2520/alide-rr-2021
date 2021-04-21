@@ -35,6 +35,7 @@ public class Robot {
 
     private boolean ringBlockerMode;
     private boolean ringPusherMode;
+    private boolean ringPusherModeTeleop;
 
     private double shooterAnglePos;
     private double shooterAngleDeg;
@@ -47,7 +48,8 @@ public class Robot {
 
     public static double ringBlockerOffPos = 0.23;
     public static double ringBlockerOnPos = 0.35;
-    public static double ringPusherOnPos = 0.5;
+    public static double ringPusherOnPos = 0.5; // auto
+    public static double ringPusherOnPosTeleop = 0.55; // teleop
     public static double ringPusherOffPos = .26;
 
     public static double shooterAnglePosMax = 0.75; // ~0 degrees, almost hits plastic
@@ -153,6 +155,18 @@ public class Robot {
         }
         else {
             ringPusherMode = false;
+            ringPusher.setPosition(ringPusherOffPos);
+        }
+    }
+
+    public boolean getRingPusherModeTeleop() { return ringPusherModeTeleop; }
+    public void setRingPusherModeTeleop(boolean mode) {
+        if (mode) {
+            ringPusherModeTeleop = true;
+            ringPusher.setPosition(ringPusherOnPosTeleop);
+        }
+        else {
+            ringPusherModeTeleop = false;
             ringPusher.setPosition(ringPusherOffPos);
         }
     }

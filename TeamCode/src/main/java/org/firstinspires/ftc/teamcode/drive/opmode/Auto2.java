@@ -32,6 +32,7 @@ public class Auto2 extends LinearOpMode {
 
     public static int backUpY = leftY;
     public static int dodgeWallY = leftY;
+    public static int strafeY = leftY;
     public static int shoot1Y = leftY;
     public static int suck1Y = leftY;
     public static int suck2Y = leftY;
@@ -51,6 +52,7 @@ public class Auto2 extends LinearOpMode {
     public static int zoneCX = 42;
     public static int backUpX = -6;
     public static int dodgeWallX = 0;
+    public static int strafeX = 42;
     public static int shoot1X = -12;
     public static int suck1X = -24;
     public static int suck2X = -36;
@@ -78,25 +80,34 @@ public class Auto2 extends LinearOpMode {
     public static Vector2d dodgeWallV = new Vector2d(dodgeWallX, dodgeWallY);
     public static Pose2d dodgeWallP = new Pose2d(dodgeWallX, dodgeWallY, Math.toRadians(180));
 
+    public static Vector2d strafeV = new Vector2d(strafeX, strafeY);
+    public static Pose2d strafeP = new Pose2d(strafeX, strafeY, Math.toRadians(180));
+
     public static Vector2d shoot1V = new Vector2d(shoot1X, shoot1Y);
     public static Pose2d shoot1P = new Pose2d(shoot1X, shoot1Y, Math.toRadians(0));
     public static Pose2d shoot1PA = new Pose2d(shoot1X, shoot1Y, Math.toRadians(5));
     public static Pose2d shoot1PB = new Pose2d(shoot1X + 12, shoot1Y, Math.toRadians(5));
+    public static Pose2d shoot1PC = new Pose2d(shoot1X + 12, shoot1Y, Math.toRadians(-5));
 
     public static Vector2d suck1V = new Vector2d(suck1X, suck1Y);
     public static Pose2d suck1P = new Pose2d(suck1X, suck1Y, Math.toRadians(180));
-    public static Pose2d suck1PB = new Pose2d(suck1X + 12, suck1Y, Math.toRadians(180));
+    public static Pose2d suck1PB = new Pose2d(suck1X, suck1Y, Math.toRadians(180));
 
     public static Vector2d suck2V = new Vector2d(suck2X, suck2Y);
+    public static Vector2d suck2VC = new Vector2d(suck2X, suck2Y - 6);
     public static Pose2d suck2P = new Pose2d(suck2X, suck2Y, Math.toRadians(180));
 
     public static Vector2d shoot2V = new Vector2d(shoot2X, shoot2Y);
     public static Pose2d shoot2P = new Pose2d(shoot2X, shoot2Y, Math.toRadians(0));
+    public static Pose2d shoot2PB = new Pose2d(shoot2X, shoot2Y, Math.toRadians(-7));
+    public static Pose2d shoot2PC = new Pose2d(shoot2X + 6, shoot2Y, Math.toRadians(-15));
 
     public static Vector2d parkV = new Vector2d(parkX, parkY);
     public static Pose2d parkP = new Pose2d(parkX, parkY, Math.toRadians(0));
 
-    public static double shooterAngle = 25;
+    public static double shooterAngleA = 25;
+    public static double shooterAngleB = 26;
+    public static double shooterAngleC = 25.5;
     public static double vel = 1700;
 
     public static int shootCount = 3;
@@ -133,11 +144,11 @@ public class Auto2 extends LinearOpMode {
                 .splineToConstantHeading(backUpV, 0)
                 .build();
 
-        Trajectory backUpToDodgeWall = drive.trajectoryBuilder(swerveToZoneA.end()) // A
+        Trajectory backUpToDodgeWall = drive.trajectoryBuilder(zoneAToBackUp.end()) // A
                 .splineToConstantHeading(dodgeWallV, 0)
                 .build();
 
-        Trajectory dodgeWallToShoot1 = drive.trajectoryBuilder(zoneAToBackUp.end()) // A
+        Trajectory dodgeWallToShoot1 = drive.trajectoryBuilder(backUpToDodgeWall.end()) // A
                 .splineToSplineHeading(shoot1PA, 0)
                 .build();
 
@@ -153,16 +164,18 @@ public class Auto2 extends LinearOpMode {
                 .splineToSplineHeading(shoot1PB, 0)
                 .build();
 
-        Trajectory shoot1ToSuck1B = drive.trajectoryBuilder(zoneBToShoot1.end()) // B
+        /* Trajectory shoot1ToSuck1B = drive.trajectoryBuilder(zoneBToShoot1.end()) // B
                 .splineToSplineHeading(suck1PB, 0)
                 .build();
+         */
 
-        Trajectory suck1ToSuck2B = drive.trajectoryBuilder(shoot1ToSuck1B.end()) // B
+        Trajectory suck1ToSuck2B = drive.trajectoryBuilder(zoneBToShoot1.end()
+                .plus(new Pose2d(0, 0, Math.toRadians(180))), false) // B
                 .splineToConstantHeading(suck2V, 0)
                 .build();
 
         Trajectory suck2ToShoot2B = drive.trajectoryBuilder(suck1ToSuck2B.end()) // B
-                .splineToSplineHeading(shoot2P, 0)
+                .splineToSplineHeading(shoot2PB, 0)
                 .build();
 
         Trajectory shoot2ToParkB = drive.trajectoryBuilder(suck2ToShoot2B.end()) // B
@@ -173,20 +186,26 @@ public class Auto2 extends LinearOpMode {
                 .splineToConstantHeading(zoneCV, 0)
                 .build();
 
-        Trajectory zoneCToShoot1 = drive.trajectoryBuilder(swerveToZoneC.end()) // C
-                .splineToSplineHeading(shoot1P, 180)
+        Trajectory zoneCToStrafe = drive.trajectoryBuilder(swerveToZoneC.end()) // C
+                .splineToConstantHeading(strafeV, 0)
                 .build();
 
-        Trajectory shoot1ToSuck1C = drive.trajectoryBuilder(zoneCToShoot1.end()) // C
+        Trajectory strafeToShoot1 = drive.trajectoryBuilder(zoneCToStrafe.end()) // C
+                .splineToSplineHeading(shoot1PC, 0)
+                .build();
+
+        /* Trajectory shoot1ToSuck1C = drive.trajectoryBuilder(zoneCToShoot1.end()) // C
                 .splineToSplineHeading(suck1P, 0)
                 .build();
+         */
 
-        Trajectory suck1ToSuck2C = drive.trajectoryBuilder(shoot1ToSuck1C.end()) // C
-                .splineToConstantHeading(suck2V, 0)
+        Trajectory suck1ToSuck2C = drive.trajectoryBuilder(strafeToShoot1.end()
+                .plus(new Pose2d(0, 0, Math.toRadians(180))), false) // C
+                .splineToConstantHeading(suck2VC, 0)
                 .build();
 
         Trajectory suck2ToShoot2C = drive.trajectoryBuilder(suck1ToSuck2C.end()) // C
-                .splineToSplineHeading(shoot2P, 0)
+                .splineToSplineHeading(shoot2PC, 0)
                 .build();
 
         Trajectory shoot2ToParkC = drive.trajectoryBuilder(suck2ToShoot2C.end()) // C
@@ -205,14 +224,18 @@ public class Auto2 extends LinearOpMode {
 
         camera.openCameraDeviceAsync(() -> camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
 
-        camera.closeCameraDevice();
+        while (camera.getFrameCount() < 100) {
+            rings = Processing.getRingCount();
+            telemetry.addData("Frame Count", camera.getFrameCount());
+            telemetry.addData("Rings", rings);
+            telemetry.update();
+        }
+        telemetry.addData("Rings Completed", rings);
+        telemetry.update();
 
         waitForStart();
 
-        rings = Processing.getRingCount();
-
-        telemetry.addData("Rings", rings);
-        telemetry.update();
+        camera.closeCameraDevice();
 
         if (rings == 0) { // Zone A
             drive.followTrajectory(startToSwerve);
@@ -228,9 +251,10 @@ public class Auto2 extends LinearOpMode {
             drive.followTrajectory(dodgeWallToShoot1);
 
             // shoot 3x + 3
-            roboto.autoStartShoot(shooterAngle, vel);
-            sleep(1100);
+            roboto.autoStartShoot(shooterAngleA, vel);
+            sleep(700);
             roboto.setRingBlockerMode(false);
+            sleep(400);
             for (int i = 0; i < shootCount + 3; i++) {
                 roboto.setRingPusherMode(true);
                 sleep(shootWait);
@@ -255,11 +279,12 @@ public class Auto2 extends LinearOpMode {
 
             drive.followTrajectory(zoneBToShoot1);
 
-            // shoot 3x + 3
-            roboto.autoStartShoot(shooterAngle, vel);
-            sleep(1100);
+            // shoot 3x + 1
+            roboto.autoStartShoot(shooterAngleB, vel);
+            sleep(700);
             roboto.setRingBlockerMode(false);
-            for (int i = 0; i < shootCount + 3; i++) {
+            sleep(400);
+            for (int i = 0; i < shootCount + 1; i++) {
                 roboto.setRingPusherMode(true);
                 sleep(shootWait);
                 roboto.setRingPusherMode(false);
@@ -267,7 +292,8 @@ public class Auto2 extends LinearOpMode {
             }
             roboto.autoStopShoot();
 
-            drive.followTrajectory(shoot1ToSuck1B);
+            // drive.followTrajectory(shoot1ToSuck1B);
+            drive.turn(Math.toRadians(180));
 
             roboto.setIntakeMode(true);
 
@@ -281,11 +307,12 @@ public class Auto2 extends LinearOpMode {
 
             drive.followTrajectory(suck2ToShoot2B);
 
-            // shoot 3x
-            roboto.autoStartShoot(shooterAngle, vel);
-            sleep(1100);
+            // shoot 2x
+            roboto.autoStartShoot(shooterAngleB, vel);
+            sleep(700);
             roboto.setRingBlockerMode(false);
-            for (int i = 0; i < shootCount; i++) {
+            sleep(400);
+            for (int i = 0; i < 2; i++) {
                 roboto.setRingPusherMode(true);
                 sleep(shootWait);
                 roboto.setRingPusherMode(false);
@@ -306,13 +333,15 @@ public class Auto2 extends LinearOpMode {
             roboto.setWobbleGrabberMode(false);
             sleep(500);
 
-            drive.followTrajectory(zoneCToShoot1);
+            drive.followTrajectory(zoneCToStrafe);
+            drive.followTrajectory(strafeToShoot1);
 
-            // shoot 3x + 3
-            roboto.autoStartShoot(shooterAngle, vel);
-            sleep(1100);
+            // shoot 3x + 1
+            roboto.autoStartShoot(shooterAngleC, vel);
+            sleep(700);
             roboto.setRingBlockerMode(false);
-            for (int i = 0; i < shootCount + 3; i++) {
+            sleep(400);
+            for (int i = 0; i < shootCount + 1; i++) {
                 roboto.setRingPusherMode(true);
                 sleep(shootWait);
                 roboto.setRingPusherMode(false);
@@ -320,7 +349,8 @@ public class Auto2 extends LinearOpMode {
             }
             roboto.autoStopShoot();
 
-            drive.followTrajectory(shoot1ToSuck1C);
+            // drive.followTrajectory(shoot1ToSuck1C);
+            drive.turn(Math.toRadians(180));
 
             roboto.setIntakeMode(true);
 
@@ -330,14 +360,15 @@ public class Auto2 extends LinearOpMode {
 
             sleep(100);
 
-            roboto.setIntakeMode(false);
-
             drive.followTrajectory(suck2ToShoot2C);
 
+            roboto.setIntakeMode(false);
+
             // shoot 3x
-            roboto.autoStartShoot(shooterAngle, vel);
-            sleep(1100);
+            roboto.autoStartShoot(shooterAngleC, vel);
+            sleep(700);
             roboto.setRingBlockerMode(false);
+            sleep(400);
             for (int i = 0; i < shootCount; i++) {
                 roboto.setRingPusherMode(true);
                 sleep(shootWait);

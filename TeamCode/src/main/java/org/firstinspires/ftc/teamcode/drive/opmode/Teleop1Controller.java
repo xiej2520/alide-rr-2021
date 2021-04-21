@@ -22,7 +22,7 @@ public class Teleop1Controller extends LinearOpMode{
     private FtcDashboard dashboard;
 
     public static double shooterVelocity = 1600; // Should be possible with 11 voltage battery
-    public static double shooterAnglePreset = 30;
+    public static double shooterAnglePreset = 27.5;
     public static boolean slowDrive = false;
 
     @Override
@@ -45,8 +45,10 @@ public class Teleop1Controller extends LinearOpMode{
         controller1.addEventListener("b", ButtonState.HELD, () -> roboto.setShooterVelocity(shooterVelocity));
         controller1.addEventListener("b", ButtonState.OFF, () -> roboto.setShooterVelocity(0));
         // Large change in shooter angle with y and a
-        controller1.addEventListener("y", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+10));
-        controller1.addEventListener("a", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-10));
+        controller1.addEventListener("y", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()+2.5));
+        controller1.addEventListener("a", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(roboto.getShooterAngleDeg()-2.5));
+        // shooter angle to zero
+        controller1.addEventListener("left_bumper", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(0));
         // Preset shooter angle
         controller1.addEventListener("right_bumper", ButtonState.PRESSED, () -> roboto.setShooterAngleDeg(shooterAnglePreset));
         // Lower blocker if shooter is on and button is pressed
@@ -56,9 +58,9 @@ public class Teleop1Controller extends LinearOpMode{
         controller1.addEventListener("left_trigger", AnalogCheck.LESS_THAN_EQUALS, 0.1, () -> roboto.setRingBlockerMode(true));
         // Push ring out if blocker is down when button is pressed
         controller1.addEventListener("right_trigger", AnalogCheck.GREATER_THAN, 0.1, () -> {
-            if (!roboto.getRingBlockerMode()) { roboto.setRingPusherMode(true); }
+            if (!roboto.getRingBlockerMode()) { roboto.setRingPusherModeTeleop(true); }
         });
-        controller1.addEventListener("right_trigger", AnalogCheck.LESS_THAN_EQUALS, 0.1, () -> roboto.setRingPusherMode(false));
+        controller1.addEventListener("right_trigger", AnalogCheck.LESS_THAN_EQUALS, 0.1, () -> roboto.setRingPusherModeTeleop(false));
         // Toggle wobble grabber with dpad_left
         controller1.addEventListener("dpad_left", ButtonState.PRESSED, () -> roboto.setWobbleGrabberMode(!roboto.getWobbleGrabberMode()));
         // Toggle Slow Drive

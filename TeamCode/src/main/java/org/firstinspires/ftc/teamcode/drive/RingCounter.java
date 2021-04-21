@@ -49,7 +49,7 @@ public class RingCounter extends OpenCvPipeline {
         Imgproc.cvtColor(input, cameraInput, Imgproc.COLOR_RGB2HSV);
         Core.inRange(cameraInput, lowHSV, highHSV, thresh);
 
-        Rect ringBox = new Rect(40, 50, 80, 60);
+        Rect ringBox = new Rect(65, 50, 80, 60);
 
         //Imgproc.rectangle(thresh, ringBox, new Scalar(78, 255, 130));
 
